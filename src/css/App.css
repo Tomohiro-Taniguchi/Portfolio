@@ -5,6 +5,27 @@
   box-sizing: border-box;
 }
 
+/* フォント設定 */
+body {
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", "Times New Roman", Times, serif;
+}
+
+/* 日本語テキスト用 */
+.about-heading h1,
+.about-text h2,
+.about-subtitle,
+.about-description,
+.cta-text {
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* 英語テキスト用 */
+.circular-text {
+  font-family: "Times New Roman", Times, Georgia, serif;
+}
+
 body,
 html {
   margin: 0;
@@ -36,7 +57,7 @@ html {
   margin: 0;
   padding: 0;
   opacity: 0;
-  animation: fadeInFloat 2s ease-out forwards;
+  animation: fadeInFloat 3s ease-out forwards;
   position: absolute;
   top: 0;
   left: 0;
@@ -128,6 +149,7 @@ html {
     left: 0;
     transform: none;
     object-fit: cover;
+    animation: fadeInFloat 3s ease-out forwards;
   }
 
   .navigation {
@@ -163,6 +185,7 @@ html {
     left: 0;
     transform: none;
     object-fit: cover;
+    animation: fadeInFloat 3s ease-out forwards;
   }
 
   .navigation {
@@ -185,5 +208,191 @@ html {
   .nav-link {
     font-size: 14px;
     padding: 6px 12px;
+  }
+}
+
+/* About Me Section */
+.about-me-section {
+  padding: 80px 0;
+  background: white;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.about-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.about-text {
+  padding-right: 40px;
+}
+
+.about-heading {
+  margin-bottom: 40px;
+}
+
+.about-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin-bottom: 20px;
+}
+
+.about-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.about-text h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.about-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+.about-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  margin: 0 0 40px 0;
+  text-align: justify;
+}
+
+.about-cta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.about-cta:hover {
+  transform: scale(1.05);
+}
+
+.about-cta:hover .cta-button {
+  background: #333;
+  color: white;
+  transform: scale(1.2);
+}
+
+.about-cta:hover .cta-text {
+  color: #666;
+}
+
+.cta-button {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.cta-text {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.about-image {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-image img {
+  width: 75%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.circular-text {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 200px;
+  height: 200px;
+  background: rgba(101, 146, 198, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 20px;
+  line-height: 1.4;
+  backdrop-filter: blur(10px);
+}
+
+/* About Me Section Responsive */
+@media (max-width: 768px) {
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .about-text {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .about-heading h1 {
+    font-size: 2rem;
+  }
+
+  .about-text h2 {
+    font-size: 1.5rem;
+  }
+
+  .about-description {
+    text-align: center;
+  }
+
+  .about-cta {
+    justify-content: center;
+  }
+
+  .circular-text {
+    width: 150px;
+    height: 150px;
+    font-size: 0.8rem;
+    top: -10px;
+    right: -10px;
   }
 }
