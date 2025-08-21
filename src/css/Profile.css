@@ -1,0 +1,552 @@
+/* Profile Page */
+.profile-container {
+  min-height: 100vh;
+  background: white;
+}
+
+.profile-content {
+  padding: 200px 40px 40px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Profile Section */
+.profile-section {
+  background: white;
+  padding: 40px 0;
+  margin-bottom: 60px;
+}
+
+.profile-content-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.profile-text {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-text:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Profile Text Section */
+.profile-text {
+  max-width: 800px;
+  margin: 0;
+  text-align: left;
+  padding-right: 40px;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-text:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.profile-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin: 0 0 20px 0;
+}
+
+.profile-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 30px 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.profile-name h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.name-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0 0 40px 0;
+  margin-left: 2em;
+  font-family: "Times New Roman", "Georgia", serif;
+}
+
+/* Profile Image Section */
+.profile-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.profile-image img {
+  width: 75%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 50px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s ease;
+}
+
+.profile-image img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+.profile-image:hover .circular-overlay {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.circular-overlay {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  background: #4a90e2;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.circular-overlay::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #4a90e2;
+}
+
+.circular-overlay p {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  font-family: "Times New Roman", "Georgia", serif;
+}
+
+/* Details Section */
+.details-section {
+  background: white;
+  padding: 40px 0;
+}
+
+.details-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.detail-item {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 80px;
+  max-width: 800px;
+  transition: all 0.3s ease;
+  border: 3px solid #6592c6;
+}
+
+.detail-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+  border-color: rgba(101, 146, 198, 0.2);
+}
+
+.section-bar hr {
+  width: 200px;
+  height: 3px;
+  background: linear-gradient(90deg, #6592c6, #8bb3e8);
+  border: none;
+  margin: 0 0 20px 0;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(101, 146, 198, 0.2);
+}
+
+.detail-item h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #6592c6;
+  margin: 0 0 20px 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Timeline Styles */
+.timeline-container {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 30px;
+  flex: 1;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #6592c6;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -22px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  background: #6592c6;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #6592c6;
+}
+
+.timeline-content h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+  font-family: "Yu Mincho", "Yu Mincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.school-with-logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.inline-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.timeline-date {
+  font-size: 1rem;
+  color: #666;
+  margin: 0 0 8px 0;
+  font-family: "Yu Mincho", "Yu Mincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.timeline-detail {
+  font-size: 0.95rem;
+  color: #777;
+  margin: 0;
+  font-family: "Yu Mincho", "Yu Mincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Info List Styles */
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  margin-bottom: 15px;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.info-list li::before {
+  content: "•";
+  color: #6592c6;
+  font-weight: bold;
+  font-size: 1.2rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #333;
+  margin-right: 8px;
+}
+
+/* Scroll Button */
+.scroll-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.scroll-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #6592c6, #8bb3e8);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+  min-width: 200px;
+  justify-content: center;
+}
+
+.scroll-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(101, 146, 198, 0.4);
+}
+
+.scroll-button span {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.scroll-button p {
+  font-size: 0.9rem;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Timeline Logo */
+.timeline-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 120px;
+}
+
+.timeline-logo img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.timeline-logo p {
+  font-size: 1rem;
+  color: #6592c6;
+  font-weight: 600;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.detail-item p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  margin: 0 0 12px 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Profile Page Responsive */
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 180px 20px 40px 20px;
+  }
+
+  .profile-content-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .profile-text {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .profile-text .name-subtitle {
+    margin-left: 0;
+  }
+
+  .profile-heading h1 {
+    font-size: 2rem;
+  }
+
+  .profile-name h2 {
+    font-size: 1.8rem;
+  }
+
+  .details-content {
+    padding: 0 20px;
+  }
+
+  .detail-item h3 {
+    font-size: 1.3rem;
+  }
+
+  .detail-item p {
+    font-size: 1rem;
+  }
+
+  .timeline-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .timeline-logo {
+    min-width: auto;
+  }
+
+  .timeline-logo img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .circular-overlay {
+    width: 100px;
+    height: 100px;
+    top: -15px;
+    left: -15px;
+  }
+
+  .circular-overlay::after {
+    bottom: -8px;
+    left: 15px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #4a90e2;
+  }
+
+  .circular-overlay p {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-content {
+    padding: 160px 15px 40px 15px;
+  }
+
+  .profile-content-grid {
+    padding: 0 15px;
+  }
+
+  .details-content {
+    padding: 0 15px;
+  }
+
+  .profile-heading h1 {
+    font-size: 1.8rem;
+  }
+
+  .profile-name h2 {
+    font-size: 1.6rem;
+  }
+
+  .detail-item h3 {
+    font-size: 1.2rem;
+  }
+
+  .circular-overlay {
+    width: 80px;
+    height: 80px;
+    top: -10px;
+    left: -10px;
+  }
+
+  .circular-overlay::after {
+    bottom: -6px;
+    left: 10px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #4a90e2;
+  }
+
+  .circular-overlay p {
+    font-size: 0.6rem;
+  }
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6592c6, #8bb3e8);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.scroll-to-top-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(101, 146, 198, 0.4);
+  background: linear-gradient(135deg, #5a7db3, #7a9fd8);
+}
+
+.scroll-to-top-button:active {
+  transform: translateY(-1px);
+}
+
+/* Scroll to Top Button Responsive */
+@media (max-width: 768px) {
+  .scroll-to-top-button {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+}

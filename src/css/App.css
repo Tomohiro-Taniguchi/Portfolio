@@ -213,7 +213,7 @@ html {
 
 /* About Me Section */
 .about-me-section {
-  padding: 80px 0;
+  padding: 40px 0;
   background: white;
   min-height: 100vh;
   display: flex;
@@ -243,7 +243,7 @@ html {
   height: 3px;
   background: #333;
   border: none;
-  margin-bottom: 20px;
+  margin: 0 0 20px 0;
 }
 
 .about-heading h1 {
@@ -290,7 +290,7 @@ html {
 }
 
 .about-cta:hover .cta-button {
-  background: #333;
+  background: #6592c6;
   color: white;
   transform: scale(1.2);
 }
@@ -299,10 +299,19 @@ html {
   color: #666;
 }
 
+/* Link内の要素のスタイル調整 */
+.about-cta .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: inherit;
+}
+
 .cta-button {
   width: 50px;
   height: 50px;
-  border: 2px solid #333;
+  border: 2px solid #6592c6;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -337,6 +346,16 @@ html {
   height: auto;
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s ease;
+}
+
+.about-image img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+.about-image:hover .circular-text {
+  transform: scale(1.1);
 }
 
 .circular-text {
@@ -357,6 +376,7 @@ html {
   padding: 20px;
   line-height: 1.4;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 /* About Me Section Responsive */
@@ -394,5 +414,138 @@ html {
     font-size: 0.8rem;
     top: -10px;
     right: -10px;
+  }
+}
+
+/* Purpose Section */
+.purpose-section {
+  padding: 40px 0;
+  background: white;
+  min-height: auto;
+  display: block;
+}
+
+.purpose-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.purpose-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.purpose-image img {
+  width: 75%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.purpose-text {
+  max-width: 600px;
+  margin: 0;
+  text-align: left;
+  padding-right: 40px;
+}
+
+.purpose-heading {
+  margin-bottom: 40px;
+}
+
+.purpose-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin: 0 0 20px 0;
+}
+
+.purpose-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.purpose-text .about-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  margin: 0 0 40px 0;
+  text-align: justify;
+}
+
+/* Purpose Section Responsive */
+@media (max-width: 768px) {
+  .purpose-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .purpose-text {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .purpose-heading h1 {
+    font-size: 2rem;
+  }
+
+  .purpose-text .about-description {
+    text-align: center;
+  }
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6592c6, #8bb3e8);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.scroll-to-top-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(101, 146, 198, 0.4);
+  background: linear-gradient(135deg, #5a7db3, #7a9fd8);
+}
+
+.scroll-to-top-button:active {
+  transform: translateY(-1px);
+}
+
+/* Scroll to Top Button Responsive */
+@media (max-width: 768px) {
+  .scroll-to-top-button {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
   }
 }

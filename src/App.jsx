@@ -1,6 +1,7 @@
 import "./css/App.css";
 import Header from "./components/Header";
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
 
 function App() {
   const [videoSource, setVideoSource] = useState("/img/cat.mp4");
@@ -59,10 +60,12 @@ function App() {
               React.jsなど）といったフロントエンド開発も勉強中です。
             </p>
             <div className="about-cta">
-              <div className="cta-button">
-                <span className="arrow">→</span>
-              </div>
-              <span className="cta-text">詳しく見る</span>
+              <Link to="/profile" className="nav-link">
+                <div className="cta-button">
+                  <span className="arrow">→</span>
+                </div>
+                <span className="cta-text">詳しく見る</span>
+              </Link>
             </div>
           </div>
           <div className="about-image">
@@ -73,6 +76,38 @@ function App() {
           </div>
         </div>
       </div>
+      <div className="purpose-section">
+        <div className="purpose-content">
+          <div className="purpose-text">
+            <div className="purpose-heading">
+              <hr />
+              <h1>Purpose of This Site</h1>
+            </div>
+            <p className="about-description">
+              このポートフォリオサイトは、私がこれまでに学んできたIT分野に関することを形に残しておきたいと思って製作したWebサイトです。
+              <br />
+              ネットワークや情報セキュリティに関する知識を深めるために、インプットだけでなくアウトプットも行いたいと感じたことが1つのきっかけですが、
+              将来フロントエンド開発を副業として取り組むことにも興味を抱いているので、簡単にWebデザインの勉強もして、React.jsでお手製のWebサイトを実装してみました。
+              <br />
+              ポートフォリオサイト×テックブログのような使い方を中心としますが、完全に自己満で全く無関係な趣味の内容も掲載していこうかなと思います。
+              <br />
+              IT分野に興味がある人にとって、少しでも誰かの参考になることがあれば幸いです(ˆ▿ˆ)/
+            </p>
+          </div>
+          <div className="purpose-image">
+            <img src="/img/my-icon.jpg" alt="My Icon" />
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll to Top Button */}
+      <button
+        className="scroll-to-top-button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="画面上部へスクロール"
+      >
+        <span>↑</span>
+      </button>
     </div>
   );
 }
