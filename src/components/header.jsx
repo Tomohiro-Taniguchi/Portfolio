@@ -15,6 +15,12 @@ export default function Header() {
         <Link to="/profile" className="nav-link">
           PROFILE
         </Link>
+        <Link to="/blog" className="nav-link">
+          BLOG
+        </Link>
+        <Link to="/gallery" className="nav-link">
+          GALLERY
+        </Link>
       </div>
     </nav>
   );
