@@ -1,5 +1,5 @@
 import "./css/App.css";
-import Header from "./components/Header";
+import Header from "./components/header";
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 

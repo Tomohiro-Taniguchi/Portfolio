@@ -3,7 +3,7 @@ import App from "@/src/App.jsx";
 import Profile from "@/src/pages/Profile.jsx";
 import Blog from "@/src/pages/Blog.jsx";
 import Gallery from "@/src/pages/Gallery.jsx";
-import User from "@/src/pages/User.jsx";
+import Admin from "@/src/pages/Admin.jsx";
 import Post from "@/src/pages/Post.jsx";
 
 export default function Router() {
@@ -13,8 +13,8 @@ export default function Router() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/gallery" element={<Gallery />} />
-      <Route path="/user/:id" element={<User />} />
-      <Route path="/user/:id/b203357m241731" element={<Post />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin/:id/b203357m241731" element={<Post />} />
     </Routes>
   );
 }

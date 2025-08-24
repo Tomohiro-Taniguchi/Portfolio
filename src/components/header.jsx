@@ -21,6 +21,9 @@ export default function Header() {
         <Link to="/gallery" className="nav-link">
           GALLERY
         </Link>
+        <Link to="/admin" className="nav-link">
+          ADMIN
+        </Link>
       </div>
     </nav>
   );

@@ -1,4 +1,4 @@
-import Header from "../components/Header";
+import Header from "../components/header";
 import "../css/Profile.css";
 import { useEffect } from "react";
 

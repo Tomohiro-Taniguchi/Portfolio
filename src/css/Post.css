@@ -1,0 +1,241 @@
+/* Post Page */
+.post-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding-top: 80px; /* ヘッダーの高さ分のパディングを追加 */
+}
+
+.post-content {
+  padding: 120px 40px 40px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 40px;
+  align-items: start;
+}
+
+.post-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333333;
+  margin: 0 0 40px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  position: relative;
+}
+
+.post-content h1::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: #333333;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(51, 51, 51, 0.2);
+}
+
+.post-content h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #6592c6;
+  margin: 0 0 25px 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* エラーコンテナ */
+.error-container {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+.error-message {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.error-close-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.error-close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ローディングコンテナ */
+.loading-container {
+  text-align: center;
+  padding: 40px;
+  background: rgba(101, 146, 198, 0.1);
+  border-radius: 15px;
+  border: 2px dashed #6592c6;
+}
+
+.loading-container p {
+  font-size: 1.2rem;
+  color: #6592c6;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ユーザー情報 */
+.user-info {
+  background: rgba(101, 146, 198, 0.05);
+  padding: 30px;
+  border-radius: 15px;
+  border: 2px solid rgba(101, 146, 198, 0.2);
+}
+
+.user-info p {
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(101, 146, 198, 0.1);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.user-info p:last-of-type {
+  border-bottom: none;
+  margin-bottom: 25px;
+}
+
+.user-info strong {
+  color: #6592c6;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+/* ログアウトボタン */
+.logout-button {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.logout-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
+  background: linear-gradient(135deg, #ff5252, #d32f2f);
+}
+
+.logout-button:active {
+  transform: translateY(-1px);
+}
+
+/* ログインリダイレクトボタン */
+.login-redirect-button {
+  background: linear-gradient(135deg, #6592c6, #8bb3e8);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  margin-top: 20px;
+}
+
+.login-redirect-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(101, 146, 198, 0.4);
+  background: linear-gradient(135deg, #5a7db3, #7a9fd8);
+}
+
+.login-redirect-button:active {
+  transform: translateY(-1px);
+}
+
+/* 認証が必要な場合の表示は削除 - Postタイトルを黒色に統一 */
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .post-content {
+    padding: 180px 20px 40px 20px;
+    margin: 10px;
+  }
+
+  .post-content h1 {
+    font-size: 2rem;
+  }
+
+  .post-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .user-info {
+    padding: 20px;
+  }
+
+  .user-info p {
+    font-size: 1rem;
+  }
+
+  .logout-button,
+  .login-redirect-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-content {
+    padding: 160px 15px 40px 15px;
+  }
+
+  .post-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .post-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .user-info {
+    padding: 15px;
+  }
+
+  .error-container {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+}
