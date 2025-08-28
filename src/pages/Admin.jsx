@@ -41,8 +41,8 @@ export default function Admin() {
             className="snowflake"
             style={{
               left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 20}s`,
-              animationDuration: `${8 + Math.random() * 12}s`,
+              animationDelay: `${(i * 0.1) % 2}s`,
+              animationDuration: `${5 + Math.random() * 12}s`,
             }}
           >
             {["❄", "❅", "❆"][i % 3]}

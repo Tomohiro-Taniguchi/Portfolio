@@ -6,17 +6,13 @@
 }
 
 .post-content {
-  padding: 120px 40px 40px 40px;
-  max-width: 1200px;
+  padding: 120px 15px 40px 15px;
+  max-width: 95vw;
   margin: 0 auto;
   background: white;
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 40px;
-  align-items: start;
 }
 
 .post-content h1 {
@@ -186,7 +182,540 @@
 
 /* 認証が必要な場合の表示は削除 - Postタイトルを黒色に統一 */
 
+/* ブログセクション */
+.blog-sections {
+  display: grid;
+  grid-template-columns: 3.5fr 5fr 1.5fr;
+  gap: 20px;
+  align-items: start;
+  margin-top: 30px;
+}
+
+/* ブログフォームセクション */
+.blog-form-section {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid rgba(101, 146, 198, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+  min-width: 280px;
+}
+
+.blog-form-section h2 {
+  font-size: 1.8rem;
+  color: #6592c6;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* ブログフォーム */
+.blog-form {
+  margin-bottom: 0;
+}
+
+.blog-form .form-group {
+  margin-bottom: 25px;
+}
+
+.blog-form label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.blog-form input,
+.blog-form textarea,
+.blog-form select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e1e8ed;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+  color: #333;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.blog-form input:focus,
+.blog-form textarea:focus,
+.blog-form select:focus {
+  outline: none;
+  border-color: #6592c6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(101, 146, 198, 0.1);
+  transform: translateY(-2px);
+}
+
+.blog-form textarea {
+  resize: vertical;
+  min-height: 300px;
+  font-family: "Courier New", monospace;
+  line-height: 1.6;
+}
+
+.blog-form select {
+  cursor: pointer;
+}
+
+/* フォームヘルプテキスト */
+.form-help {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* カスタムスクロールバー */
+.blog-form-section::-webkit-scrollbar,
+.blog-preview-section::-webkit-scrollbar,
+.blog-posts-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.blog-form-section::-webkit-scrollbar-track,
+.blog-preview-section::-webkit-scrollbar-track,
+.blog-posts-section::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.blog-form-section::-webkit-scrollbar-thumb,
+.blog-preview-section::-webkit-scrollbar-thumb,
+.blog-posts-section::-webkit-scrollbar-thumb {
+  background: #6592c6;
+  border-radius: 4px;
+}
+
+.blog-form-section::-webkit-scrollbar-thumb:hover,
+.blog-preview-section::-webkit-scrollbar-thumb:hover,
+.blog-posts-section::-webkit-scrollbar-thumb:hover {
+  background: #5a7db3;
+}
+
+/* ブログプレビューセクション */
+.blog-preview-section {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  border: 2px solid rgba(101, 146, 198, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.blog-preview-section h2 {
+  font-size: 1.8rem;
+  color: #6592c6;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Markdownプレビュー */
+.markdown-preview {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #e1e8ed;
+  min-height: 400px;
+  text-align: left;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.markdown-preview h1 {
+  color: #6592c6;
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  border-bottom: 3px solid #6592c6;
+  padding-bottom: 10px;
+}
+
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  color: #333;
+  margin: 20px 0 10px 0;
+}
+
+.markdown-preview p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.markdown-preview code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+}
+
+.markdown-preview pre {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.markdown-preview pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* アイキャッチ画像 */
+.featured-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 説明文 */
+.description {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  font-style: italic;
+  color: #1976d2;
+  margin: 20px 0;
+}
+
+/* タグ */
+.tags {
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background: #6592c6;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ユーザー情報セクション */
+.user-info-section {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid rgba(101, 146, 198, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  min-width: 280px;
+  max-width: 320px;
+  overflow: hidden;
+}
+
+.user-info-section h3 {
+  font-size: 1.4rem;
+  color: #6592c6;
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.user-info-section p {
+  font-size: 1rem;
+  margin: 0 0 15px 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(101, 146, 198, 0.1);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+.user-info-section p:last-of-type {
+  border-bottom: none;
+  margin-bottom: 20px;
+}
+
+.user-info-section strong {
+  color: #6592c6;
+  font-weight: 600;
+  margin-right: 8px;
+  display: inline-block;
+  min-width: 80px;
+}
+
+/* 投稿ボタン */
+.submit-button {
+  background: linear-gradient(135deg, #6592c6, #8bb3e8);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  width: 100%;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(101, 146, 198, 0.4);
+}
+
+.submit-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* ボタングループ */
+.button-group {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.cancel-button {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.cancel-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(108, 117, 125, 0.4);
+}
+
+/* 投稿リストセクション */
+.blog-posts-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.blog-posts-section h2 {
+  font-size: 2rem;
+  color: #6592c6;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.loading-posts,
+.no-posts {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* 投稿グリッド */
+.posts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+  width: 100%;
+}
+
+/* 投稿カード */
+.post-card {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 30px;
+  border: 2px solid rgba(101, 146, 198, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: none;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(101, 146, 198, 0.3);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.post-header h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 15px;
+}
+
+.status-badge.draft {
+  background: #ffc107;
+  color: #212529;
+}
+
+.status-badge.published {
+  background: #28a745;
+  color: white;
+}
+
+.status-badge.private {
+  background: #6c757d;
+  color: white;
+}
+
+.post-thumbnail {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.post-description {
+  color: #666;
+  margin: 20px 0;
+  line-height: 1.6;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.post-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.post-meta small {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.post-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.edit-button,
+.delete-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.edit-button {
+  background: #6592c6;
+  color: white;
+}
+
+.edit-button:hover {
+  background: #5a7db3;
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  background: #dc3545;
+  color: white;
+}
+
+.delete-button:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
 /* レスポンシブデザイン */
+@media (max-width: 1200px) {
+  .blog-sections {
+    grid-template-columns: 3.5fr 5fr;
+    gap: 20px;
+  }
+
+  .user-info-section {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .post-content {
     padding: 180px 20px 40px 20px;
@@ -201,11 +730,25 @@
     font-size: 1.5rem;
   }
 
-  .user-info {
+  .blog-sections {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .blog-form-section,
+  .blog-preview-section {
     padding: 20px;
   }
 
-  .user-info p {
+  .user-info-section {
+    padding: 20px;
+  }
+
+  .user-info-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .user-info-section p {
     font-size: 1rem;
   }
 
@@ -213,6 +756,10 @@
   .login-redirect-button {
     padding: 12px 25px;
     font-size: 1rem;
+  }
+
+  .markdown-preview {
+    min-height: 300px;
   }
 }
 
