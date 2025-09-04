@@ -1,8 +1,48 @@
 import Header from "../components/header";
 import "../css/Profile.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Profile() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const profileImages = [
+    {
+      src: "/img/JPHacks.jpg",
+      alt: "ハッカソン",
+      text: "ハッカソンに出場した時の写真です!",
+    },
+    {
+      src: "/img/choko.jpg",
+      alt: "チョコ",
+      text: "愛犬のトイプードル、名前はチョコ!",
+    },
+    {
+      src: "/img/sanrio.jpg",
+      alt: "プライベート写真",
+      text: "人生初のサンリオピューロランド!",
+    },
+    {
+      src: "/img/gamba.jpg",
+      alt: "ガンバ大阪",
+      text: "ガンバ大阪サポです!",
+    },
+    {
+      src: "/img/taniguchi.jpg",
+      alt: "谷口 友浩",
+      text: "実家の前で撮らされた写真です!",
+    },
+  ];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % profileImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + profileImages.length) % profileImages.length
+    );
+  };
+
   useEffect(() => {
     // ページが読み込まれた時に上部にスクロール
     window.scrollTo(0, 0);
@@ -47,11 +87,30 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="profile-image">
-              <img src="/img/JPHacks.jpg" alt="谷口 友浩" />
-              <div className="circular-overlay">
-                <p>ハッカソンに出場した時の写真です!</p>
+            <div className="profile-image-container">
+              <button
+                className="image-nav-button prev-button"
+                onClick={prevImage}
+              >
+                ‹
+              </button>
+
+              <div className="profile-image">
+                <img
+                  src={profileImages[currentImageIndex].src}
+                  alt={profileImages[currentImageIndex].alt}
+                />
+                <div className="circular-overlay">
+                  <p>{profileImages[currentImageIndex].text}</p>
+                </div>
               </div>
+
+              <button
+                className="image-nav-button next-button"
+                onClick={nextImage}
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>
@@ -88,7 +147,7 @@ export default function Profile() {
                 </li>
                 <li>
                   <span className="info-label">座右の銘：</span>
-                  「自分の中に毒を持て」
+                  「自分の中に毒を持て」（岡本太郎）
                 </li>
                 <li>
                   <span className="info-label">MBTI：</span>
@@ -98,6 +157,17 @@ export default function Profile() {
             </div>
 
             <div className="scroll-button-container">
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("basic-info")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↑</span>
+                <p>基本情報へ</p>
+              </button>
               <button
                 className="scroll-button"
                 onClick={() =>
@@ -207,6 +277,101 @@ export default function Profile() {
                 className="scroll-button"
                 onClick={() =>
                   document
+                    .getElementById("career-history")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↑</span>
+                <p>経歴へ</p>
+              </button>
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("other-career-history")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↓</span>
+                <p>その他の経歴へ</p>
+              </button>
+            </div>
+
+            <div className="detail-item" id="other-career-history">
+              <div className="section-bar">
+                <hr />
+              </div>
+              <h3>その他の経歴</h3>
+
+              <div className="timeline-container">
+                <div className="timeline">
+                  <div className="timeline-item">
+                    <div className="timeline-dot"></div>
+                    <div className="timeline-content">
+                      <div className="school-with-logo">
+                        <h4>GeekSalon WebExpertコース 78期受講生</h4>
+                      </div>
+                      <p className="timeline-date">2024年8月 ~ 2024年10月</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="timeline-container">
+                <div className="timeline">
+                  <div className="timeline-item">
+                    <div className="timeline-dot"></div>
+                    <div className="timeline-content">
+                      <div className="school-with-logo">
+                        <h4>
+                          GeekSalon 東京拠点
+                          WebExpertコースメンター（長期インターン）
+                        </h4>
+                      </div>
+                      <p className="timeline-detail">
+                        業務内容: プログラミング指導・コース運営,
+                        マーケティング, 人事採用・育成活動, 就活セミナー司会者,
+                        etc...
+                      </p>
+                      <p className="timeline-date">2024年12月 ~ 現在</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="timeline-container">
+                <div className="timeline">
+                  <div className="timeline-item">
+                    <div className="timeline-dot"></div>
+                    <div className="timeline-content">
+                      <div className="school-with-logo">
+                        <h4>JANOG56 Meeting 若者支援プログラム</h4>
+                      </div>
+                      <p className="timeline-date">
+                        2025年7月30日 ~ 2025年8月1日
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="scroll-button-container">
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("other-career-history")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↑</span>
+                <p>その他の経歴へ</p>
+              </button>
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
                     .getElementById("qualifications")
                     .scrollIntoView({ behavior: "smooth" })
                 }
@@ -215,7 +380,6 @@ export default function Profile() {
                 <p>保有資格へ</p>
               </button>
             </div>
-
             <div className="detail-item" id="qualifications">
               <div className="section-bar">
                 <hr />
@@ -232,6 +396,17 @@ export default function Profile() {
             </div>
 
             <div className="scroll-button-container">
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("qualifications")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↑</span>
+                <p>保有資格へ</p>
+              </button>
               <button
                 className="scroll-button"
                 onClick={() =>
@@ -289,147 +464,12 @@ export default function Profile() {
                 <div className="skills-grid">
                   <div className="skill-card">
                     <div className="skill-header">
-                      <span className="skill-icon">⚡</span>
-                      <span className="skill-name">JavaScript</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "60%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">70%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(70)}`}>
-                      {getSkillLevel(70)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">⚛️</span>
-                      <span className="skill-name">React.js</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "55%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">55%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(55)}`}>
-                      {getSkillLevel(55)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">🌐</span>
-                      <span className="skill-name">HTML/CSS</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "45%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">45%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(45)}`}>
-                      {getSkillLevel(45)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">🐍</span>
-                      <span className="skill-name">Python</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "40%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">40%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(40)}`}>
-                      {getSkillLevel(40)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">☕</span>
-                      <span className="skill-name">Java</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "35%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">35%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(35)}`}>
-                      {getSkillLevel(35)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">⚙️</span>
-                      <span className="skill-name">C/C++</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "30%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">30%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(30)}`}>
-                      {getSkillLevel(30)}
-                    </div>
-                  </div>
-
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">🐘</span>
-                      <span className="skill-name">PHP</span>
-                    </div>
-                    <div className="skill-progress">
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: "0%" }}
-                        ></div>
-                      </div>
-                      <span className="progress-text">0%</span>
-                    </div>
-                    <div className={`skill-level ${getSkillLevelClass(0)}`}>
-                      {getSkillLevel(0)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* フレームワーク・ツール */}
-              <div className="skills-section">
-                <h4>フレームワーク・ツール</h4>
-                <div className="skills-grid">
-                  <div className="skill-card">
-                    <div className="skill-header">
-                      <span className="skill-icon">🔥</span>
-                      <span className="skill-name">Firebase</span>
+                      <img
+                        src="/img/skill/C.png"
+                        alt="C"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">C</span>
                     </div>
                     <div className="skill-progress">
                       <div className="progress-bar">
@@ -447,8 +487,127 @@ export default function Profile() {
 
                   <div className="skill-card">
                     <div className="skill-header">
-                      <span className="skill-icon">📦</span>
-                      <span className="skill-name">Git</span>
+                      <img
+                        src="/img/skill/C++.png"
+                        alt="C++"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">C++</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "55%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">55%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(55)}`}>
+                      {getSkillLevel(55)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/C_sharp.png"
+                        alt="C#"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">C#</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "35%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">35%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(35)}`}>
+                      {getSkillLevel(35)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Python.png"
+                        alt="Python3"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Python3</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "70%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">70%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(70)}`}>
+                      {getSkillLevel(70)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/JavaScript.png"
+                        alt="JavaScript"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">JavaScript</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "75%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">75%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(75)}`}>
+                      {getSkillLevel(75)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/TypeScript.png"
+                        alt="TypeScript"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">TypeScript</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "50%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">50%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(50)}`}>
+                      {getSkillLevel(50)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Java.png"
+                        alt="Java"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Java</span>
                     </div>
                     <div className="skill-progress">
                       <div className="progress-bar">
@@ -463,21 +622,437 @@ export default function Profile() {
                       {getSkillLevel(45)}
                     </div>
                   </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/R.png"
+                        alt="R"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">R</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "30%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">30%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(30)}`}>
+                      {getSkillLevel(30)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/VHDL.png"
+                        alt="VHDL"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">VHDL</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "5%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">5%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(5)}`}>
+                      {getSkillLevel(5)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/SQL.png"
+                        alt="SQL"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">SQL</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "20%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">20%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(20)}`}>
+                      {getSkillLevel(20)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/HTML.png"
+                        alt="HTML"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">HTML</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "80%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">80%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(80)}`}>
+                      {getSkillLevel(80)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/CSS.png"
+                        alt="CSS"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">CSS</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "70%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">70%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(70)}`}>
+                      {getSkillLevel(70)}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* その他のスキル */}
+              {/* フレームワーク&ライブラリ */}
               <div className="skills-section">
-                <h4>その他のスキル</h4>
-                <ul className="info-list">
-                  <li>来年からネットワーク業界のエンジニアとして就職予定</li>
-                  <li>現在長期インターンにてWebサイト制作を勉強中</li>
-                  <li>JavaScript, React.jsなどのフロントエンド開発</li>
-                </ul>
+                <h4>フレームワーク&ライブラリ</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Next.png"
+                        alt="Next.js"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Next.js</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "40%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">40%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(40)}`}>
+                      {getSkillLevel(40)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Node.png"
+                        alt="Node.js"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Node.js</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "40%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">40%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(40)}`}>
+                      {getSkillLevel(40)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/React.png"
+                        alt="React"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">React</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "75%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">75%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(75)}`}>
+                      {getSkillLevel(75)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Unity.webp"
+                        alt="Unity"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Unity</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "55%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">55%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(55)}`}>
+                      {getSkillLevel(55)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* データベース */}
+              <div className="skills-section">
+                <h4>データベース</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/MySQL.png"
+                        alt="MySQL"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">MySQL</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "40%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">40%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(40)}`}>
+                      {getSkillLevel(40)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/InfluxDB.png"
+                        alt="InfluxDB"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">InfluxDB</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "50%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">50%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(50)}`}>
+                      {getSkillLevel(50)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* クラウドプラットフォーム */}
+              <div className="skills-section">
+                <h4>クラウドプラットフォーム</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/AWS.png"
+                        alt="AWS"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">AWS</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "20%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">20%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(20)}`}>
+                      {getSkillLevel(20)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Firebase.png"
+                        alt="Firebase"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Firebase</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "75%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">75%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(75)}`}>
+                      {getSkillLevel(75)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* その他 */}
+              <div className="skills-section">
+                <h4>その他</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Git.png"
+                        alt="Git"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Git</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "80%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">80%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(80)}`}>
+                      {getSkillLevel(80)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/GitHub.png"
+                        alt="GitHub"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">GitHub</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "80%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">80%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(80)}`}>
+                      {getSkillLevel(80)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Linux.png"
+                        alt="Linux"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Linux</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "60%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">60%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(60)}`}>
+                      {getSkillLevel(60)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <img
+                        src="/img/skill/Docker.png"
+                        alt="Docker"
+                        className="skill-icon"
+                      />
+                      <span className="skill-name">Docker</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "10%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">10%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(10)}`}>
+                      {getSkillLevel(10)}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="scroll-button-container">
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("career-skills")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↑</span>
+                <p>スキルへ</p>
+              </button>
               <button
                 className="scroll-button"
                 onClick={() =>
@@ -497,14 +1072,15 @@ export default function Profile() {
               </div>
               <h3>趣味・興味</h3>
               <ul className="info-list">
-                <li>ガンバ大阪サポーター</li>
-                <li>阪神ファン</li>
+                <li>ガンバ大阪</li>
+                <li>阪神タイガース</li>
                 <li>お笑い（さらば青春の光, 霜降り明星, ジャルジャルなど）</li>
                 <li>温泉・サウナ</li>
                 <li>旅行</li>
                 <li>写真撮影</li>
                 <li>運動</li>
                 <li>ドライブ</li>
+                <li>動物（実家ではトイプードル飼ってます）</li>
                 <li>👆見たら分かるように結構広く浅く多趣味な人間です！</li>
               </ul>
             </div>

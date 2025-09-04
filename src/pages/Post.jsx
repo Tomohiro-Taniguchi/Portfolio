@@ -12,11 +12,66 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+  listAll,
+  getMetadata,
+} from "firebase/storage";
 import { useNavigate } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import AddIcon from "@mui/icons-material/Add";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ImageIcon from "@mui/icons-material/Image";
+
+// カスタム画像コンポーネント（キャプション付き）
+const CustomImage = ({ src, alt, title, width, height, style }) => {
+  // カスタム記法の解析: ![alt|scale=0.5](url "title")
+  const parseImageScale = (altText) => {
+    // scale指定の解析: |scale=0.5のような形式
+    const scaleMatch = altText.match(/\|scale=(\d*\.?\d+)/);
+    if (scaleMatch) {
+      const scale = parseFloat(scaleMatch[1]);
+      return {
+        scale: scale,
+        alt: altText.replace(/\|scale=\d*\.?\d+/, ""), // scale部分を除去
+      };
+    }
+    return { alt: altText };
+  };
+
+  const scaleInfo = parseImageScale(alt);
+  const finalAlt = scaleInfo.alt;
+  const scale = scaleInfo.scale;
+
+  return (
+    <div
+      className="custom-image-container"
+      style={{
+        transform: scale ? `scale(${scale})` : undefined,
+        transformOrigin: scale ? "center" : undefined,
+      }}
+    >
+      <img
+        src={src}
+        alt={finalAlt}
+        className="custom-image"
+        width={width}
+        height={height}
+        style={{
+          ...style,
+          transform: "none", // 画像自体のtransformは削除
+        }}
+      />
+      {title && <div className="image-caption">{title}</div>}
+    </div>
+  );
+};
 
 // 日本語文字をローマ字に変換する関数
 const convertToRomanizedId = (text) => {
@@ -393,6 +448,23 @@ export default function Post() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(5);
+  const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [filters, setFilters] = useState({
+    title: "",
+    dateFrom: "",
+    dateTo: "",
+    tags: [],
+  });
+  const [availableTags, setAvailableTags] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  // ギャラリー用の状態変数
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [galleryImageVisibility, setGalleryImageVisibility] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -425,6 +497,8 @@ export default function Post() {
   useEffect(() => {
     if (user) {
       fetchBlogPosts();
+      fetchExistingImages(); // 既存の画像も取得
+      fetchExistingGalleryImages(); // ギャラリー画像も取得
     }
   }, [user]);
 
@@ -436,12 +510,114 @@ export default function Post() {
         id: doc.id,
         ...doc.data(),
       }));
-      setBlogPosts(posts);
+
+      // 投稿日順でソート（新しい順）
+      const sortedPosts = posts.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB - dateA;
+      });
+
+      setBlogPosts(sortedPosts);
+      setCurrentPage(1); // 投稿リストが更新されたら1ページ目に戻す
+
+      // 利用可能なタグを取得
+      const allTags = new Set();
+      posts.forEach((post) => {
+        if (post.tags) {
+          post.tags.forEach((tag) => allTags.add(tag));
+        }
+      });
+      setAvailableTags(Array.from(allTags).sort());
     } catch (error) {
       console.error("投稿リストの取得に失敗:", error);
       setError("投稿リストの取得に失敗しました");
     } finally {
       setIsLoadingPosts(false);
+    }
+  };
+
+  // 既存の画像を取得する関数
+  const fetchExistingImages = async () => {
+    try {
+      // Firebase Storageのblog-imagesフォルダから画像を取得
+      const storageRef = ref(storage, "blog-images");
+      const listResult = await listAll(storageRef);
+
+      const imagePromises = listResult.items.map(async (itemRef) => {
+        try {
+          const url = await getDownloadURL(itemRef);
+          const metadata = await getMetadata(itemRef);
+
+          return {
+            id: itemRef.name,
+            name: itemRef.name.replace(/^\d+_/, ""), // タイムスタンププレフィックスを除去
+            url: url,
+            size: metadata.size,
+            uploadedAt: new Date(metadata.timeCreated),
+            path: itemRef.fullPath,
+          };
+        } catch (error) {
+          console.error(`画像情報の取得に失敗 (${itemRef.name}):`, error);
+          return null;
+        }
+      });
+
+      const images = (await Promise.all(imagePromises)).filter(
+        (img) => img !== null
+      );
+
+      // アップロード日時でソート（新しい順）
+      const sortedImages = images.sort((a, b) => b.uploadedAt - a.uploadedAt);
+
+      setUploadedImages(sortedImages);
+    } catch (error) {
+      console.error("既存画像の取得に失敗:", error);
+      // エラーが発生しても処理を継続
+    }
+  };
+
+  // ギャラリー用の既存画像を取得する関数
+  const fetchExistingGalleryImages = async () => {
+    try {
+      // Firebase Storageのgallery-imagesフォルダから画像を取得
+      const storageRef = ref(storage, "gallery-images");
+      const listResult = await listAll(storageRef);
+
+      const imagePromises = listResult.items.map(async (itemRef) => {
+        try {
+          const url = await getDownloadURL(itemRef);
+          const metadata = await getMetadata(itemRef);
+
+          return {
+            id: itemRef.name,
+            name: itemRef.name.replace(/^\d+_/, ""), // タイムスタンププレフィックスを除去
+            url: url,
+            size: metadata.size,
+            uploadedAt: new Date(metadata.timeCreated),
+            path: itemRef.fullPath,
+            isPublic: true, // デフォルトは公開
+          };
+        } catch (error) {
+          console.error(
+            `ギャラリー画像情報の取得に失敗 (${itemRef.name}):`,
+            error
+          );
+          return null;
+        }
+      });
+
+      const images = (await Promise.all(imagePromises)).filter(
+        (img) => img !== null
+      );
+
+      // アップロード日時でソート（新しい順）
+      const sortedImages = images.sort((a, b) => b.uploadedAt - a.uploadedAt);
+
+      setGalleryImages(sortedImages);
+    } catch (error) {
+      console.error("ギャラリー既存画像の取得に失敗:", error);
+      // エラーが発生しても処理を継続
     }
   };
 
@@ -692,6 +868,28 @@ export default function Post() {
     }
   };
 
+  // ページネーション用の関数
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = blogPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(blogPosts.length / postsPerPage);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   const handleCancelEdit = () => {
     setEditingPost(null);
     setBlogPost({
@@ -705,6 +903,328 @@ export default function Post() {
     });
     setImageFile(null);
     setImagePreview("");
+  };
+
+  // 並び替え機能
+  const handleSortChange = (newSortOrder) => {
+    setSortOrder(newSortOrder);
+    const sortedPosts = [...blogPosts].sort((a, b) => {
+      const dateA = a.createdAt?.toDate?.() || new Date(0);
+      const dateB = b.createdAt?.toDate?.() || new Date(0);
+      return newSortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+    setBlogPosts(sortedPosts);
+    setCurrentPage(1); // 並び替え時に1ページ目に戻す
+  };
+
+  // 絞り込み機能
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleTagToggle = (tag) => {
+    setFilters((prev) => ({
+      ...prev,
+      tags: prev.tags.includes(tag)
+        ? prev.tags.filter((t) => t !== tag)
+        : [...prev.tags, tag],
+    }));
+  };
+
+  const applyFilters = () => {
+    let filteredPosts = [...blogPosts];
+
+    // タイトルで絞り込み
+    if (filters.title) {
+      filteredPosts = filteredPosts.filter((post) =>
+        post.title.toLowerCase().includes(filters.title.toLowerCase())
+      );
+    }
+
+    // 日付範囲で絞り込み
+    if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom);
+      filteredPosts = filteredPosts.filter((post) => {
+        const postDate = post.createdAt?.toDate?.() || new Date(0);
+        return postDate >= fromDate;
+      });
+    }
+
+    if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo);
+      filteredPosts = filteredPosts.filter((post) => {
+        const postDate = post.createdAt?.toDate?.() || new Date(0);
+        return postDate <= toDate;
+      });
+    }
+
+    // タグで絞り込み
+    if (filters.tags.length > 0) {
+      filteredPosts = filteredPosts.filter(
+        (post) =>
+          post.tags && filters.tags.some((tag) => post.tags.includes(tag))
+      );
+    }
+
+    // 並び替えを適用
+    const sortedPosts = filteredPosts.sort((a, b) => {
+      const dateA = a.createdAt?.toDate?.() || new Date(0);
+      const dateB = b.createdAt?.toDate?.() || new Date(0);
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    setBlogPosts(sortedPosts);
+    setCurrentPage(1); // 絞り込み時に1ページ目に戻す
+    setShowFilterModal(false);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      title: "",
+      dateFrom: "",
+      dateTo: "",
+      tags: [],
+    });
+    fetchBlogPosts(); // 元の記事一覧を再取得
+    setShowFilterModal(false);
+  };
+
+  const isFilterActive = () => {
+    return (
+      filters.title ||
+      filters.dateFrom ||
+      filters.dateTo ||
+      filters.tags.length > 0
+    );
+  };
+
+  // 画像アップロード機能
+  const handleImageUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    const newImages = [];
+
+    for (const file of files) {
+      try {
+        // ファイルサイズチェック（5MB以下）
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`${file.name} のサイズが5MBを超えています`);
+          continue;
+        }
+
+        // ファイル形式チェック
+        if (!file.type.startsWith("image/")) {
+          alert(`${file.name} は画像ファイルではありません`);
+          continue;
+        }
+
+        // ファイル名を生成（重複を避ける）
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${file.name}`;
+        const storageRef = ref(storage, `blog-images/${fileName}`);
+
+        // アップロード
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        // 画像情報を保存
+        const imageInfo = {
+          id: `${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
+          name: file.name,
+          url: downloadURL,
+          size: file.size,
+          uploadedAt: new Date(),
+          path: `blog-images/${fileName}`,
+        };
+
+        newImages.push(imageInfo);
+      } catch (error) {
+        console.error(`画像アップロードエラー (${file.name}):`, error);
+        alert(`${file.name} のアップロードに失敗しました`);
+      }
+    }
+
+    if (newImages.length > 0) {
+      setUploadedImages((prev) => [...prev, ...newImages]);
+    }
+
+    setIsUploading(false);
+    event.target.value = ""; // ファイル入力をリセット
+  };
+
+  // ギャラリー用画像アップロード機能
+  const handleGalleryImageUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setIsUploadingGallery(true);
+    const newImages = [];
+
+    for (const file of files) {
+      try {
+        // ファイルサイズチェック（50MB以下）
+        if (file.size > 50 * 1024 * 1024) {
+          alert(`${file.name} のサイズが50MBを超えています`);
+          continue;
+        }
+
+        // ファイル形式チェック（画像と動画）
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+
+        if (!isImage && !isVideo) {
+          alert(`${file.name} は画像または動画ファイルではありません`);
+          continue;
+        }
+
+        // ファイル名を生成（重複を避ける）
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${file.name}`;
+        const storageRef = ref(storage, `gallery-images/${fileName}`);
+
+        // アップロード
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        // 画像情報を保存
+        const imageInfo = {
+          id: `${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
+          name: file.name,
+          url: downloadURL,
+          size: file.size,
+          uploadedAt: new Date(),
+          path: `gallery-images/${fileName}`,
+          isPublic: true, // デフォルトは公開
+          type: isImage ? "image" : "video", // ファイルタイプを追加
+        };
+
+        // Firestoreにも保存
+        await addDoc(collection(db, "galleryImages"), {
+          ...imageInfo,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+
+        newImages.push(imageInfo);
+      } catch (error) {
+        console.error(
+          `ギャラリー画像アップロードエラー (${file.name}):`,
+          error
+        );
+        alert(`${file.name} のアップロードに失敗しました`);
+      }
+    }
+
+    if (newImages.length > 0) {
+      setGalleryImages((prev) => [...prev, ...newImages]);
+    }
+
+    setIsUploadingGallery(false);
+    event.target.value = ""; // ファイル入力をリセット
+  };
+
+  const copyImageUrl = async (url) => {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (error) {
+      console.error("URLコピーエラー:", error);
+      alert("URLのコピーに失敗しました");
+    }
+  };
+
+  const deleteImage = async (imageId) => {
+    if (!window.confirm("この画像を削除しますか？")) return;
+
+    try {
+      const imageToDelete = uploadedImages.find((img) => img.id === imageId);
+      if (!imageToDelete) return;
+
+      // Firebase Storageから削除
+      const storageRef = ref(storage, imageToDelete.path);
+      await deleteObject(storageRef);
+
+      // 状態から削除
+      setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
+      alert("画像を削除しました");
+    } catch (error) {
+      console.error("画像削除エラー:", error);
+      alert("画像の削除に失敗しました");
+    }
+  };
+
+  // ギャラリー画像削除機能
+  const deleteGalleryImage = async (imageId) => {
+    if (!window.confirm("この画像を削除しますか？")) return;
+
+    try {
+      const imageToDelete = galleryImages.find((img) => img.id === imageId);
+      if (!imageToDelete) return;
+
+      // Firebase Storageから削除
+      const storageRef = ref(storage, imageToDelete.path);
+      await deleteObject(storageRef);
+
+      // 状態から削除
+      setGalleryImages((prev) => prev.filter((img) => img.id !== imageId));
+      alert("画像を削除しました");
+    } catch (error) {
+      console.error("ギャラリー画像削除エラー:", error);
+      alert("画像の削除に失敗しました");
+    }
+  };
+
+  // ギャラリー画像の公開/非公開トグル機能
+  const toggleGalleryImageVisibility = async (imageId) => {
+    try {
+      // Firestoreにギャラリー画像の公開設定を保存
+      const imageRef = doc(db, "galleryImages", imageId);
+      const currentImage = galleryImages.find((img) => img.id === imageId);
+
+      if (currentImage) {
+        const newPublicStatus = !currentImage.isPublic;
+        await updateDoc(imageRef, {
+          isPublic: newPublicStatus,
+          updatedAt: serverTimestamp(),
+        });
+
+        // ローカル状態を更新
+        setGalleryImages((prev) =>
+          prev.map((img) =>
+            img.id === imageId ? { ...img, isPublic: newPublicStatus } : img
+          )
+        );
+
+        alert(
+          newPublicStatus ? "画像を公開しました" : "画像を非公開にしました"
+        );
+      }
+    } catch (error) {
+      console.error("公開設定の更新に失敗:", error);
+      alert("公開設定の更新に失敗しました");
+    }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   // ログインしていない場合は適切な案内を表示
@@ -730,7 +1250,10 @@ export default function Post() {
     <div className="post-container">
       <Header />
       <div className="post-content">
-        <h1>Post</h1>
+        <div className="post-heading">
+          <hr />
+          <h1>Post</h1>
+        </div>
         {error && (
           <div className="error-container">
             <p className="error-message">{error}</p>
@@ -850,35 +1373,7 @@ export default function Post() {
                       name="content"
                       value={blogPost.content}
                       onChange={handleInputChange}
-                      placeholder="Markdown記法で記事を書いてください
-
-## 目次
-- [はじめに](#はじめに)
-- [1部](#1部)
-- [2部](#2部)
-- [3部](#3部)
-- [4部](#4部)
-- [5部](#5部)
-
----
-
-## はじめに
-ここに内容を書きます...
-
-## 1部
-1部の内容...
-
-## 2部
-2部の内容...
-
-## 3部
-3部の内容...
-
-## 4部
-4部の内容...
-
-## 5部
-5部の内容..."
+                      placeholder="Markdown記法で記事を書いてください"
                       required
                       rows="15"
                     />
@@ -949,6 +1444,7 @@ export default function Post() {
                       a: (props) => <CustomLink {...props} />,
                       u: (props) => <CustomUnderline {...props} />,
                       span: (props) => <CustomSpan {...props} />,
+                      img: (props) => <CustomImage {...props} />,
                       code: ({
                         node,
                         inline,
@@ -997,6 +1493,184 @@ export default function Post() {
               </div>
             </div>
 
+            {/* 画像アップロードセクション - 左右分割 */}
+            <div className="image-upload-sections">
+              {/* 左側: ブログ用画像アップロード */}
+              <div className="image-upload-section blog-images">
+                <h3>ブログ用画像アップロード</h3>
+
+                {/* アップロードエリア */}
+                <div className="upload-area">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="file-input"
+                    id="imageUpload"
+                    disabled={isUploading}
+                  />
+                  <label htmlFor="imageUpload" className="upload-label">
+                    {isUploading ? (
+                      <div className="upload-loading">
+                        <p>アップロード中...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <AddIcon className="upload-icon" />
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {/* 画像一覧 */}
+                <div className="image-gallery">
+                  <h4>アップロード済みブログ用画像一覧</h4>
+                  {uploadedImages.length === 0 ? (
+                    <div className="no-images">
+                      <p>まだ画像がアップロードされていません</p>
+                    </div>
+                  ) : (
+                    <div className="image-list">
+                      {uploadedImages.map((image) => (
+                        <div key={image.id} className="image-item">
+                          <div className="image-preview">
+                            <img src={image.url} alt={image.name} />
+                          </div>
+                          <div className="image-info">
+                            <div className="image-name">
+                              <ImageIcon className="folder-icon" />
+                              {image.name}
+                            </div>
+                            <div className="image-details">
+                              <span className="file-size">
+                                {formatFileSize(image.size)}
+                              </span>
+                              <span className="upload-date">
+                                {formatDate(image.uploadedAt)}
+                              </span>
+                              <div className="image-actions">
+                                <button
+                                  onClick={() => copyImageUrl(image.url)}
+                                  className="copy-url-button"
+                                  title="URLをコピー"
+                                >
+                                  <FileCopyIcon className="button-icon" />
+                                  コピー
+                                </button>
+                                <button
+                                  onClick={() => deleteImage(image.id)}
+                                  className="delete-image-button"
+                                  title="画像を削除"
+                                >
+                                  <DeleteIcon className="button-icon" />
+                                  削除
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 右側: ギャラリー用画像アップロード */}
+              <div className="image-upload-section gallery-images">
+                <h3>ギャラリー用メディアアップロード</h3>
+
+                {/* アップロードエリア */}
+                <div className="upload-area">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*,video/*"
+                    onChange={handleGalleryImageUpload}
+                    className="file-input"
+                    id="galleryImageUpload"
+                    disabled={isUploadingGallery}
+                  />
+                  <label htmlFor="galleryImageUpload" className="upload-label">
+                    {isUploadingGallery ? (
+                      <div className="upload-loading">
+                        <p>アップロード中...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <AddIcon className="upload-icon" />
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {/* 画像一覧 */}
+                <div className="image-gallery">
+                  <h4>アップロード済みギャラリー用メディア一覧</h4>
+                  {galleryImages.length === 0 ? (
+                    <div className="no-images">
+                      <p>まだ画像がアップロードされていません</p>
+                    </div>
+                  ) : (
+                    <div className="image-list">
+                      {galleryImages.map((image) => (
+                        <div key={image.id} className="image-item">
+                          <div className="image-preview">
+                            <img src={image.url} alt={image.name} />
+                          </div>
+                          <div className="image-info">
+                            <div className="image-name">
+                              <ImageIcon className="folder-icon" />
+                              {image.name}
+                            </div>
+                            <div className="image-details">
+                              <span className="file-size">
+                                {formatFileSize(image.size)}
+                              </span>
+                              <span className="upload-date">
+                                {formatDate(image.uploadedAt)}
+                              </span>
+                              <div className="image-actions">
+                                <button
+                                  onClick={() => copyImageUrl(image.url)}
+                                  className="copy-url-button"
+                                  title="URLをコピー"
+                                >
+                                  <FileCopyIcon className="button-icon" />
+                                  コピー
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    toggleGalleryImageVisibility(image.id)
+                                  }
+                                  className={`visibility-toggle-button ${
+                                    image.isPublic ? "public" : "private"
+                                  }`}
+                                  title={
+                                    image.isPublic ? "非公開にする" : "公開する"
+                                  }
+                                >
+                                  {image.isPublic ? "公開中" : "非公開"}
+                                </button>
+                                <button
+                                  onClick={() => deleteGalleryImage(image.id)}
+                                  className="delete-image-button"
+                                  title="画像を削除"
+                                >
+                                  <DeleteIcon className="button-icon" />
+                                  削除
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* 投稿リストセクション - 3列グリッドの外に独立配置 */}
             <div className="blog-posts-section">
               <h2>投稿一覧</h2>
@@ -1009,80 +1683,256 @@ export default function Post() {
                   <p>まだ投稿がありません</p>
                 </div>
               ) : (
-                <div className="posts-grid">
-                  {blogPosts.map((post) => (
-                    <div key={post.id} className="post-card">
-                      <div className="post-header">
-                        <h3>{post.title}</h3>
-                        <span className={`status-badge ${post.status}`}>
-                          {post.status === "draft"
-                            ? "下書き"
-                            : post.status === "published"
-                            ? "公開"
-                            : "非公開"}
-                        </span>
-                      </div>
+                <>
+                  {/* 並び替え・絞り込みコントロール */}
+                  <div className="admin-sort-controls">
+                    <span className="admin-sort-label">並び替え:</span>
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => handleSortChange(e.target.value)}
+                      className="admin-sort-select"
+                    >
+                      <option value="newest">投稿日が新しい順</option>
+                      <option value="oldest">投稿日が古い順</option>
+                    </select>
+                    <button
+                      onClick={() => setShowFilterModal(true)}
+                      className="admin-filter-button"
+                    >
+                      絞り込み
+                    </button>
+                    {isFilterActive() && (
+                      <button
+                        onClick={clearFilters}
+                        className="admin-clear-filter-button"
+                      >
+                        絞り込み解除
+                      </button>
+                    )}
+                  </div>
 
-                      {post.featuredImage && (
-                        <img
-                          src={post.featuredImage}
-                          alt="アイキャッチ画像"
-                          className="post-thumbnail"
-                        />
-                      )}
+                  <div className="admin-posts-grid">
+                    {currentPosts.map((post) => (
+                      <div key={post.id} className="admin-post-card">
+                        <div className="admin-post-header">
+                          <h3>{post.title}</h3>
+                          <span className={`status-badge ${post.status}`}>
+                            {post.status === "draft"
+                              ? "下書き"
+                              : post.status === "published"
+                              ? "公開"
+                              : "非公開"}
+                          </span>
+                        </div>
 
-                      <p className="post-description">
-                        {post.description || "説明文がありません"}
-                      </p>
-
-                      <div className="post-tags">
-                        {post.tags &&
-                          post.tags.map((tag, index) => (
-                            <span key={index} className="tag">
-                              {tag}
-                            </span>
-                          ))}
-                      </div>
-
-                      <div className="post-meta">
-                        <small>
-                          作成日:{" "}
-                          {post.createdAt
-                            ?.toDate?.()
-                            ?.toLocaleDateString("ja-JP") || "不明"}
-                        </small>
-                        {post.updatedAt && (
-                          <small>
-                            更新日:{" "}
-                            {post.updatedAt
-                              ?.toDate?.()
-                              ?.toLocaleDateString("ja-JP")}
-                          </small>
+                        {post.featuredImage && (
+                          <img
+                            src={post.featuredImage}
+                            alt="アイキャッチ画像"
+                            className="admin-post-thumbnail"
+                          />
                         )}
+
+                        <p className="admin-post-description">
+                          {post.description || "説明文がありません"}
+                        </p>
+
+                        <div className="admin-post-tags">
+                          {post.tags &&
+                            post.tags.map((tag, index) => (
+                              <span key={index} className="admin-tag">
+                                {tag}
+                              </span>
+                            ))}
+                        </div>
+
+                        <div className="admin-post-meta">
+                          <small>
+                            作成日:{" "}
+                            {post.createdAt
+                              ?.toDate?.()
+                              ?.toLocaleDateString("ja-JP") || "不明"}
+                          </small>
+                          {post.updatedAt && (
+                            <small>
+                              更新日:{" "}
+                              {post.updatedAt
+                                ?.toDate?.()
+                                ?.toLocaleDateString("ja-JP")}
+                            </small>
+                          )}
+                        </div>
+
+                        <div className="admin-post-actions">
+                          <button
+                            onClick={() => handleEdit(post)}
+                            className="edit-button"
+                          >
+                            編集
+                          </button>
+                          <button
+                            onClick={() => handleDelete(post.id)}
+                            className="delete-button"
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ページネーション */}
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      <button
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                        className="pagination-button prev-button"
+                        title="前のページ"
+                      >
+                        ←
+                      </button>
+
+                      <div className="page-numbers">
+                        {Array.from(
+                          { length: totalPages },
+                          (_, i) => i + 1
+                        ).map((page) => (
+                          <button
+                            key={page}
+                            onClick={() => goToPage(page)}
+                            className={`page-number ${
+                              currentPage === page ? "active" : ""
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
                       </div>
 
-                      <div className="post-actions">
-                        <button
-                          onClick={() => handleEdit(post)}
-                          className="edit-button"
-                        >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => handleDelete(post.id)}
-                          className="delete-button"
-                        >
-                          削除
-                        </button>
-                      </div>
+                      <button
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages}
+                        className="pagination-button next-button"
+                        title="次のページ"
+                      >
+                        →
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+
+                  <div className="posts-info">
+                    <p>
+                      全 {blogPosts.length} 件中 {indexOfFirstPost + 1} -{" "}
+                      {Math.min(indexOfLastPost, blogPosts.length)} 件を表示
+                    </p>
+                  </div>
+                </>
               )}
             </div>
           </>
         )}
       </div>
+
+      {/* 絞り込みモーダル */}
+      {showFilterModal && (
+        <div
+          className="filter-modal-overlay"
+          onClick={() => setShowFilterModal(false)}
+        >
+          <div className="filter-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="filter-modal-header">
+              <h3>絞り込み設定</h3>
+              <button
+                onClick={() => setShowFilterModal(false)}
+                className="close-button"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="filter-modal-content">
+              {/* タイトル検索 */}
+              <div className="filter-section">
+                <label htmlFor="filter-title">タイトル検索:</label>
+                <input
+                  type="text"
+                  id="filter-title"
+                  name="filter-title"
+                  value={filters.title}
+                  onChange={(e) => handleFilterChange("title", e.target.value)}
+                  placeholder="タイトルを入力..."
+                  className="filter-input"
+                />
+              </div>
+
+              {/* 日付範囲 */}
+              <div className="filter-section">
+                <label htmlFor="filter-date-from">投稿日範囲:</label>
+                <div className="date-range">
+                  <input
+                    type="date"
+                    id="filter-date-from"
+                    name="filter-date-from"
+                    value={filters.dateFrom}
+                    onChange={(e) =>
+                      handleFilterChange("dateFrom", e.target.value)
+                    }
+                    className="filter-input"
+                  />
+                  <span>〜</span>
+                  <input
+                    type="date"
+                    id="filter-date-to"
+                    name="filter-date-to"
+                    value={filters.dateTo}
+                    onChange={(e) =>
+                      handleFilterChange("dateTo", e.target.value)
+                    }
+                    className="filter-input"
+                  />
+                </div>
+              </div>
+
+              {/* タグ選択 */}
+              <div className="filter-section">
+                <label>タグ選択:</label>
+                <div className="tag-selection">
+                  {availableTags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => handleTagToggle(tag)}
+                      className={`tag-button ${
+                        filters.tags.includes(tag) ? "selected" : ""
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="filter-modal-footer">
+              <button onClick={clearFilters} className="clear-button">
+                クリア
+              </button>
+              <button onClick={applyFilters} className="apply-button">
+                適用
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Scroll to Top Button */}
+      <button
+        className="scroll-to-top-button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="画面上部へスクロール"
+      >
+        <span>↑</span>
+      </button>
     </div>
   );
 }

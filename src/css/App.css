@@ -349,12 +349,14 @@ html {
   transition: all 0.3s ease;
 }
 
-.about-image img:hover {
+.about-image img:hover,
+.about-image:hover img {
   transform: scale(1.1);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
 }
 
-.about-image:hover .circular-text {
+.about-image:hover .circular-text,
+.about-image .circular-text:hover {
   transform: scale(1.1);
 }
 

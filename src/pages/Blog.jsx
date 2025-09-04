@@ -8,6 +8,50 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { useParams, useNavigate } from "react-router";
 
+// カスタム画像コンポーネント（キャプション付き）
+const CustomImage = ({ src, alt, title, width, height, style }) => {
+  // カスタム記法の解析: ![alt|scale=0.5](url "title")
+  const parseImageScale = (altText) => {
+    // scale指定の解析: |scale=0.5のような形式
+    const scaleMatch = altText.match(/\|scale=(\d*\.?\d+)/);
+    if (scaleMatch) {
+      const scale = parseFloat(scaleMatch[1]);
+      return {
+        scale: scale,
+        alt: altText.replace(/\|scale=\d*\.?\d+/, ""), // scale部分を除去
+      };
+    }
+    return { alt: altText };
+  };
+
+  const scaleInfo = parseImageScale(alt);
+  const finalAlt = scaleInfo.alt;
+  const scale = scaleInfo.scale;
+
+  return (
+    <div
+      className="custom-image-container"
+      style={{
+        transform: scale ? `scale(${scale})` : undefined,
+        transformOrigin: scale ? "center" : undefined,
+      }}
+    >
+      <img
+        src={src}
+        alt={finalAlt}
+        className="custom-image"
+        width={width}
+        height={height}
+        style={{
+          ...style,
+          transform: "none", // 画像自体のtransformは削除
+        }}
+      />
+      {title && <div className="image-caption">{title}</div>}
+    </div>
+  );
+};
+
 // 日本語文字をローマ字に変換する関数
 const convertToRomanizedId = (text) => {
   const japaneseToRoman = {
@@ -377,6 +421,8 @@ export default function Blog() {
     tags: [],
   });
   const [availableTags, setAvailableTags] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(12); // 4×3のグリッド表示
   const { postId } = useParams();
   const navigate = useNavigate();
 
@@ -424,6 +470,7 @@ export default function Blog() {
       });
 
       setBlogPosts(sortedPosts);
+      setCurrentPage(1); // 投稿リストが更新されたら1ページ目に戻す
 
       // 利用可能なタグを取得
       const allTags = new Set();
@@ -435,7 +482,9 @@ export default function Blog() {
       setAvailableTags(Array.from(allTags).sort());
     } catch (error) {
       console.error("ブログ記事の取得に失敗:", error);
-      setError("ブログ記事の取得に失敗しました");
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
+      setError(`ブログ記事の取得に失敗しました: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -458,6 +507,7 @@ export default function Blog() {
       return newSortOrder === "newest" ? dateB - dateA : dateA - dateB;
     });
     setBlogPosts(sortedPosts);
+    setCurrentPage(1); // 並び替え時に1ページ目に戻す
   };
 
   const handleFilterChange = (field, value) => {
@@ -519,6 +569,7 @@ export default function Blog() {
     });
 
     setBlogPosts(sortedPosts);
+    setCurrentPage(1); // 絞り込み時に1ページ目に戻す
     setShowFilterModal(false);
   };
 
@@ -530,6 +581,7 @@ export default function Blog() {
       tags: [],
     });
     fetchBlogPosts(); // 元の記事一覧を再取得
+    setCurrentPage(1); // 絞り込み解除時に1ページ目に戻す
     setShowFilterModal(false);
   };
 
@@ -549,6 +601,28 @@ export default function Blog() {
       month: "long",
       day: "numeric",
     });
+  };
+
+  // ページネーション用の関数
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = blogPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(blogPosts.length / postsPerPage);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   if (isLoading) {
@@ -641,6 +715,7 @@ export default function Blog() {
                     a: (props) => <CustomLink {...props} />,
                     u: (props) => <CustomUnderline {...props} />,
                     span: (props) => <CustomSpan {...props} />,
+                    img: (props) => <CustomImage {...props} />,
                     code: ({ node, inline, className, children, ...props }) => {
                       const match = /language-(\w+)/.exec(className || "");
                       const language = match ? match[1] : "";
@@ -714,24 +789,24 @@ export default function Blog() {
           </div>
         ) : (
           <div className="blog-posts-grid">
-            {blogPosts.map((post) => (
+            {currentPosts.map((post) => (
               <article
                 key={post.id}
                 className="blog-post-card"
                 onClick={() => handlePostClick(post)}
               >
+                {post.featuredImage && (
+                  <div className="post-image">
+                    <img
+                      src={post.featuredImage}
+                      alt="アイキャッチ画像"
+                      className="post-thumbnail"
+                    />
+                  </div>
+                )}
+
                 <div className="post-info">
                   <h2 className="post-title">{post.title}</h2>
-
-                  {post.featuredImage && (
-                    <div className="post-image">
-                      <img
-                        src={post.featuredImage}
-                        alt="アイキャッチ画像"
-                        className="post-thumbnail"
-                      />
-                    </div>
-                  )}
 
                   <div className="post-meta">
                     <div className="post-date-container">
@@ -760,6 +835,52 @@ export default function Blog() {
             ))}
           </div>
         )}
+
+        {/* ページネーション */}
+        {blogPosts.length > 0 && (
+          <div className="pagination">
+            <button
+              onClick={goToPrevPage}
+              disabled={currentPage === 1}
+              className="pagination-button prev-button"
+              title="前のページ"
+            >
+              ←
+            </button>
+
+            <div className="page-numbers">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`page-number ${
+                      currentPage === page ? "active" : ""
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className="pagination-button next-button"
+              title="次のページ"
+            >
+              →
+            </button>
+          </div>
+        )}
+
+        <div className="posts-info">
+          <p>
+            全 {blogPosts.length} 件中 {indexOfFirstPost + 1} -{" "}
+            {Math.min(indexOfLastPost, blogPosts.length)} 件を表示
+          </p>
+        </div>
       </div>
 
       {/* 絞り込みモーダル */}
@@ -846,6 +967,15 @@ export default function Blog() {
           </div>
         </div>
       )}
+
+      {/* Scroll to Top Button */}
+      <button
+        className="scroll-to-top-button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="画面上部へスクロール"
+      >
+        <span>↑</span>
+      </button>
     </div>
   );
 }
