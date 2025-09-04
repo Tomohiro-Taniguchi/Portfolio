@@ -12,6 +12,7 @@ export default function Router() {
       <Route path="/" element={<App />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:postId" element={<Blog />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/admin/:id/b203357m241731" element={<Post />} />

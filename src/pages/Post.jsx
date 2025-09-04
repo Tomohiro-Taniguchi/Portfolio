@@ -1,7 +1,7 @@
 import Header from "../components/header";
 import "../css/Post.css";
 import { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import {
   collection,
@@ -12,9 +12,366 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+
+// 日本語文字をローマ字に変換する関数
+const convertToRomanizedId = (text) => {
+  const japaneseToRoman = {
+    あ: "a",
+    い: "i",
+    う: "u",
+    え: "e",
+    お: "o",
+    か: "ka",
+    き: "ki",
+    く: "ku",
+    け: "ke",
+    こ: "ko",
+    さ: "sa",
+    し: "shi",
+    す: "su",
+    せ: "se",
+    そ: "so",
+    た: "ta",
+    ち: "chi",
+    つ: "tsu",
+    て: "te",
+    と: "to",
+    な: "na",
+    に: "ni",
+    ぬ: "nu",
+    ね: "ne",
+    の: "no",
+    は: "ha",
+    ひ: "hi",
+    ふ: "fu",
+    へ: "he",
+    ほ: "ho",
+    ま: "ma",
+    み: "mi",
+    む: "mu",
+    め: "me",
+    も: "mo",
+    や: "ya",
+    ゆ: "yu",
+    よ: "yo",
+    ら: "ra",
+    り: "ri",
+    る: "ru",
+    れ: "re",
+    ろ: "ro",
+    わ: "wa",
+    を: "wo",
+    ん: "n",
+    が: "ga",
+    ぎ: "gi",
+    ぐ: "gu",
+    げ: "ge",
+    ご: "go",
+    ざ: "za",
+    じ: "ji",
+    ず: "zu",
+    ぜ: "ze",
+    ぞ: "zo",
+    だ: "da",
+    ぢ: "ji",
+    づ: "zu",
+    で: "de",
+    ど: "do",
+    ば: "ba",
+    び: "bi",
+    ぶ: "bu",
+    べ: "be",
+    ぼ: "bo",
+    ぱ: "pa",
+    ぴ: "pi",
+    ぷ: "pu",
+    ぺ: "pe",
+    ぽ: "po",
+    きゃ: "kya",
+    きゅ: "kyu",
+    きょ: "kyo",
+    しゃ: "sha",
+    しゅ: "shu",
+    しょ: "sho",
+    ちゃ: "cha",
+    ちゅ: "chu",
+    ちょ: "cho",
+    にゃ: "nya",
+    にゅ: "nyu",
+    にょ: "nyo",
+    ひゃ: "hya",
+    ひゅ: "hyu",
+    ひょ: "hyo",
+    みゃ: "mya",
+    みゅ: "myu",
+    みょ: "myo",
+    りゃ: "rya",
+    りゅ: "ryu",
+    りょ: "ryo",
+    ぎゃ: "gya",
+    ぎゅ: "gyu",
+    ぎょ: "gyo",
+    じゃ: "ja",
+    じゅ: "ju",
+    じょ: "jo",
+    びゃ: "bya",
+    びゅ: "byu",
+    びょ: "byo",
+    ぴゃ: "pya",
+    ぴゅ: "pyu",
+    ぴょ: "pyo",
+    部: "bu",
+    目: "me",
+    次: "ji",
+    始: "shi",
+    め: "me",
+    に: "ni",
+  };
+
+  let result = text.toLowerCase();
+
+  // 2文字の組み合わせを先に処理
+  for (const [japanese, roman] of Object.entries(japaneseToRoman)) {
+    if (japanese.length === 2) {
+      result = result.replace(new RegExp(japanese, "g"), roman);
+    }
+  }
+
+  // 1文字の組み合わせを処理
+  for (const [japanese, roman] of Object.entries(japaneseToRoman)) {
+    if (japanese.length === 1) {
+      result = result.replace(new RegExp(japanese, "g"), roman);
+    }
+  }
+
+  // 残りの文字を除去し、ハイフンに変換
+  result = result
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return result || "section";
+};
+
+// カスタム見出しコンポーネント
+const CustomHeading = ({ level, children, ...props }) => {
+  const HeadingTag = `h${level}`;
+  const id = convertToRomanizedId(children?.toString() || "");
+
+  // 目次見出しの場合は特別なクラスを付与
+  const isToc = children?.toString() === "目次";
+  const className = isToc ? "toc-heading" : "";
+
+  return (
+    <HeadingTag id={id} className={className} {...props}>
+      {children}
+    </HeadingTag>
+  );
+};
+
+// カスタム下線コンポーネント
+const CustomUnderline = ({ children, ...props }) => {
+  return (
+    <u
+      style={{
+        textDecoration: "underline",
+        textDecorationColor: "#6592c6", // 元の青色に戻す
+        textDecorationThickness: "2px",
+        textUnderlineOffset: "3px",
+      }}
+      {...props}
+    >
+      {children}
+    </u>
+  );
+};
+
+const CustomSpan = ({ children, ...props }) => {
+  return (
+    <span
+      style={{
+        color: "red",
+      }}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+};
+
+// カスタム数式コンポーネント
+const CustomMath = ({ children, className }) => {
+  const [rendered, setRendered] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const renderMath = async () => {
+      try {
+        setError("");
+        console.log("CustomMath rendering:", children);
+
+        // KaTeXが読み込まれているかチェック
+        if (typeof window.katex === "undefined") {
+          console.log("KaTeX not loaded, loading from CDN...");
+          // KaTeX CDNを動的に読み込み
+          const script = document.createElement("script");
+          script.src =
+            "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js";
+          script.onload = () => {
+            console.log("KaTeX script loaded");
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href =
+              "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css";
+            document.head.appendChild(link);
+
+            // 数式をレンダリング
+            try {
+              console.log("Rendering math:", children);
+              const html = window.katex.renderToString(children, {
+                throwOnError: false,
+                displayMode: className === "math-display",
+              });
+              console.log("Rendered HTML:", html);
+              setRendered(html);
+            } catch (err) {
+              console.error("KaTeX rendering error:", err);
+              setError("数式のレンダリングに失敗しました: " + err.message);
+            }
+          };
+          script.onerror = () => {
+            console.error("Failed to load KaTeX script");
+            setError("KaTeXの読み込みに失敗しました");
+          };
+          document.head.appendChild(script);
+        } else {
+          console.log("KaTeX already loaded, rendering...");
+          // KaTeXが既に読み込まれている場合
+          const html = window.katex.renderToString(children, {
+            throwOnError: false,
+            displayMode: className === "math-display",
+          });
+          console.log("Rendered HTML:", html);
+          setRendered(html);
+        }
+      } catch (err) {
+        console.error("CustomMath error:", err);
+        setError("数式のレンダリングに失敗しました: " + err.message);
+      }
+    };
+
+    if (children) {
+      renderMath();
+    }
+  }, [children, className]);
+
+  if (error) {
+    return <div style={{ padding: "10px", color: "red" }}>{error}</div>;
+  }
+
+  if (!rendered) {
+    return <div style={{ padding: "10px" }}>数式をレンダリング中...</div>;
+  }
+
+  return (
+    <div
+      className={className === "math-display" ? "math-display" : "math-inline"}
+      dangerouslySetInnerHTML={{ __html: rendered }}
+    />
+  );
+};
+
+// CustomSummaryコンポーネントを削除（不要になったため）
+// const CustomSummary = ({ children, ...props }) => {
+//   return (
+//     <summary
+//       style={{
+//         background: "#f8f9fa",
+//         color: "#333",
+//         padding: "12px 16px",
+//         cursor: "pointer",
+//         fontWeight: "400",
+//         fontSize: "1rem",
+//         userSelect: "none",
+//         listStyle: "none", // デフォルトのマーカーを非表示
+//         display: "flex",
+//         alignItems: "center",
+//         gap: "8px",
+//       }}
+//       {...props}
+//     >
+//       <span
+//         style={{
+//           width: "0",
+//           height: "0",
+//           borderLeft: "4px solid #333",
+//           borderTop: "3px solid transparent",
+//           borderBottom: "3px solid transparent",
+//           transition: "transform 0.2s ease",
+//         }}
+//       />
+//       {children}
+//     </summary>
+//   );
+// };
+
+// カスタムリンクコンポーネント（目次用）
+const CustomLink = ({ href, children, ...props }) => {
+  const handleClick = (e) => {
+    console.log("CustomLink clicked - href:", href);
+
+    // 目次リンクの場合（#で始まる場合）
+    if (href && href.startsWith("#")) {
+      e.preventDefault();
+
+      // URLエンコードされた文字をデコード（最初に実行）
+      let targetId = decodeURIComponent(href);
+      console.log("After URL decode:", targetId);
+
+      // ##で始まる場合は、##を除去してIDを生成
+      if (targetId.startsWith("##")) {
+        targetId = targetId.substring(2); // ##を除去
+        console.log("After removing ##:", targetId);
+        // 日本語文字をIDに変換
+        targetId = convertToRomanizedId(targetId);
+        console.log("Final targetId:", targetId);
+      } else if (targetId.startsWith("#")) {
+        // 通常の#リンクの場合
+        targetId = targetId.substring(1); // #を除去
+        console.log("After removing #:", targetId);
+      }
+
+      const targetElement = document.getElementById(targetId);
+      console.log("Target element found:", targetElement);
+
+      if (targetElement) {
+        // スムーズスクロール
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        console.log("Scrolling to element");
+      } else {
+        console.log(
+          "Target element not found. Available IDs:",
+          Array.from(document.querySelectorAll("[id]")).map((el) => el.id)
+        );
+      }
+    }
+  };
+
+  return (
+    <a href={href} onClick={handleClick} {...props}>
+      {children}
+    </a>
+  );
+};
 
 export default function Post() {
   const [user, setUser] = useState(null);
@@ -33,6 +390,9 @@ export default function Post() {
   const [blogPosts, setBlogPosts] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -131,12 +491,19 @@ export default function Post() {
 
     setIsSubmitting(true);
     try {
-      // デバッグ用：投稿データの確認
-      console.log("投稿しようとしているデータ:", blogPost);
-      console.log("現在のユーザー:", user);
+      // 画像をアップロード
+      let imageURL = blogPost.featuredImage; // 既存のURLがある場合
+      if (imageFile) {
+        imageURL = await uploadImage();
+        if (!imageURL) {
+          setIsSubmitting(false);
+          return;
+        }
+      }
 
       const postData = {
         ...blogPost,
+        featuredImage: imageURL,
         authorId: user.uid,
         authorName: user.email,
         createdAt: serverTimestamp(),
@@ -148,10 +515,7 @@ export default function Post() {
         status: blogPost.status || "draft",
       };
 
-      console.log("Firestoreに送信するデータ:", postData);
-
       const docRef = await addDoc(collection(db, "blogPosts"), postData);
-      console.log("投稿が完了しました。ドキュメントID:", docRef.id);
       alert("投稿が完了しました！");
 
       // フォームをリセット
@@ -164,6 +528,8 @@ export default function Post() {
         description: "",
         status: "draft",
       });
+      setImageFile(null);
+      setImagePreview("");
 
       // 投稿リストを更新
       fetchBlogPosts();
@@ -204,6 +570,8 @@ export default function Post() {
       description: post.description || "",
       status: post.status || "draft",
     });
+    setImageFile(null);
+    setImagePreview(post.featuredImage || "");
   };
 
   const handleUpdate = async (e) => {
@@ -212,8 +580,19 @@ export default function Post() {
 
     setIsSubmitting(true);
     try {
+      // 画像をアップロード
+      let imageURL = blogPost.featuredImage; // 既存のURLがある場合
+      if (imageFile) {
+        imageURL = await uploadImage();
+        if (!imageURL) {
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const postData = {
         ...blogPost,
+        featuredImage: imageURL,
         tags: blogPost.tags
           .split(",")
           .map((tag) => tag.trim())
@@ -235,6 +614,8 @@ export default function Post() {
         status: "draft",
       });
       setEditingPost(null);
+      setImageFile(null);
+      setImagePreview("");
 
       // 投稿リストを更新
       fetchBlogPosts();
@@ -263,6 +644,54 @@ export default function Post() {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // ファイルサイズチェック（5MB以下）
+      if (file.size > 5 * 1024 * 1024) {
+        setError("画像ファイルは5MB以下にしてください");
+        return;
+      }
+
+      // ファイル形式チェック
+      if (!file.type.startsWith("image/")) {
+        setError("画像ファイルを選択してください");
+        return;
+      }
+
+      setImageFile(file);
+
+      // プレビュー表示
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile) return null;
+
+    setIsUploadingImage(true);
+    try {
+      const timestamp = Date.now();
+      const fileName = `blog-images/${timestamp}_${imageFile.name}`;
+      const storageRef = ref(storage, fileName);
+
+      const snapshot = await uploadBytes(storageRef, imageFile);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      return downloadURL;
+    } catch (error) {
+      console.error("画像アップロードエラー:", error);
+      setError("画像のアップロードに失敗しました");
+      return null;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditingPost(null);
     setBlogPost({
@@ -274,6 +703,8 @@ export default function Post() {
       description: "",
       status: "draft",
     });
+    setImageFile(null);
+    setImagePreview("");
   };
 
   // ログインしていない場合は適切な案内を表示
@@ -365,17 +796,35 @@ export default function Post() {
                     />
                   </div>
 
-                  {/* アイキャッチ画像 */}
+                  {/* トップ画像 */}
                   <div className="form-group">
-                    <label htmlFor="featuredImage">アイキャッチ画像URL</label>
+                    <label htmlFor="featuredImage">トップ画像</label>
                     <input
-                      type="url"
+                      type="file"
                       id="featuredImage"
-                      name="featuredImage"
-                      value={blogPost.featuredImage}
-                      onChange={handleInputChange}
-                      placeholder="https://example.com/image.jpg"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="file-input"
                     />
+                    <small className="form-help">
+                      画像ファイルを選択してください（5MB以下、JPG、PNG、GIF対応）
+                    </small>
+
+                    {/* プレビュー表示 */}
+                    {(imagePreview || blogPost.featuredImage) && (
+                      <div className="image-preview">
+                        <img
+                          src={imagePreview || blogPost.featuredImage}
+                          alt="プレビュー"
+                          className="preview-image"
+                        />
+                        {isUploadingImage && (
+                          <div className="upload-loading">
+                            <p>画像をアップロード中...</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* 投稿ステータス */}
@@ -395,7 +844,7 @@ export default function Post() {
 
                   {/* 内容入力 */}
                   <div className="form-group">
-                    <label htmlFor="content">内容（Markdown記法対応） *</label>
+                    <label htmlFor="content">内容（Markdown記法対応）</label>
                     <textarea
                       id="content"
                       name="content"
@@ -403,17 +852,33 @@ export default function Post() {
                       onChange={handleInputChange}
                       placeholder="Markdown記法で記事を書いてください
 
-# 見出し1
-## 見出し2
+## 目次
+- [はじめに](#はじめに)
+- [1部](#1部)
+- [2部](#2部)
+- [3部](#3部)
+- [4部](#4部)
+- [5部](#5部)
 
-**太字**や*斜体*も使えます
+---
 
-- リスト項目1
-- リスト項目2
+## はじめに
+ここに内容を書きます...
 
-```javascript
-console.log('コードブロック');
-```"
+## 1部
+1部の内容...
+
+## 2部
+2部の内容...
+
+## 3部
+3部の内容...
+
+## 4部
+4部の内容...
+
+## 5部
+5部の内容..."
                       required
                       rows="15"
                     />
@@ -471,7 +936,47 @@ console.log('コードブロック');
                       ))}
                     </div>
                   )}
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      h1: (props) => <CustomHeading level={1} {...props} />,
+                      h2: (props) => <CustomHeading level={2} {...props} />,
+                      h3: (props) => <CustomHeading level={3} {...props} />,
+                      h4: (props) => <CustomHeading level={4} {...props} />,
+                      h5: (props) => <CustomHeading level={5} {...props} />,
+                      h6: (props) => <CustomHeading level={6} {...props} />,
+                      a: (props) => <CustomLink {...props} />,
+                      u: (props) => <CustomUnderline {...props} />,
+                      span: (props) => <CustomSpan {...props} />,
+                      code: ({
+                        node,
+                        inline,
+                        className,
+                        children,
+                        ...props
+                      }) => {
+                        const match = /language-(\w+)/.exec(className || "");
+                        const language = match ? match[1] : "";
+
+                        // 数式の場合
+                        if (language === "math") {
+                          return (
+                            <CustomMath className="math-display" {...props}>
+                              {children}
+                            </CustomMath>
+                          );
+                        }
+
+                        // 通常のコードブロック
+                        return (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
+                  >
                     {blogPost.content}
                   </ReactMarkdown>
                 </div>

@@ -7,6 +7,26 @@ export default function Profile() {
     // ページが読み込まれた時に上部にスクロール
     window.scrollTo(0, 0);
   }, []);
+
+  // スキルレベルを判定する関数
+  const getSkillLevel = (percentage) => {
+    if (percentage === 0) return "未経験者";
+    if (percentage >= 1 && percentage <= 25) return "初心者";
+    if (percentage >= 26 && percentage <= 50) return "初級者";
+    if (percentage >= 51 && percentage <= 75) return "中級者";
+    if (percentage >= 76 && percentage <= 100) return "上級者";
+    return "未経験者";
+  };
+
+  // スキルレベルに応じたクラスを取得する関数
+  const getSkillLevelClass = (percentage) => {
+    if (percentage === 0) return "beginner";
+    if (percentage >= 1 && percentage <= 25) return "novice";
+    if (percentage >= 26 && percentage <= 50) return "elementary";
+    if (percentage >= 51 && percentage <= 75) return "intermediate";
+    if (percentage >= 76 && percentage <= 100) return "advanced";
+    return "beginner";
+  };
   return (
     <div className="profile-container">
       <Header />
@@ -230,21 +250,263 @@ export default function Profile() {
                 <hr />
               </div>
               <h3>スキル</h3>
-              <ul className="info-list">
-                <li>来年からネットワーク業界のエンジニアとして就職予定</li>
-                <li>現在長期インターンにてWebサイト制作を勉強中</li>
-                <li>JavaScript, React.jsなどのフロントエンド開発</li>
-              </ul>
+
+              {/* スキル評価基準 */}
+              <div className="skill-evaluation-guide">
+                <h4>スキル評価基準</h4>
+                <div className="evaluation-criteria">
+                  <div className="criteria-item">
+                    <span className="criteria-level">未経験者</span>
+                    <span className="criteria-range">0%</span>
+                    <span className="criteria-description">学習開始前</span>
+                  </div>
+                  <div className="criteria-item">
+                    <span className="criteria-level">初心者</span>
+                    <span className="criteria-range">1-25%</span>
+                    <span className="criteria-description">学習開始</span>
+                  </div>
+                  <div className="criteria-item">
+                    <span className="criteria-level">初級者</span>
+                    <span className="criteria-range">26-50%</span>
+                    <span className="criteria-description">基礎理解</span>
+                  </div>
+                  <div className="criteria-item">
+                    <span className="criteria-level">中級者</span>
+                    <span className="criteria-range">51-75%</span>
+                    <span className="criteria-description">実践レベル</span>
+                  </div>
+                  <div className="criteria-item">
+                    <span className="criteria-level">上級者</span>
+                    <span className="criteria-range">76-100%</span>
+                    <span className="criteria-description">エキスパート</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* プログラミング言語 */}
+              <div className="skills-section">
+                <h4>プログラミング言語</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">⚡</span>
+                      <span className="skill-name">JavaScript</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "60%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">70%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(70)}`}>
+                      {getSkillLevel(70)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">⚛️</span>
+                      <span className="skill-name">React.js</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "55%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">55%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(55)}`}>
+                      {getSkillLevel(55)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">🌐</span>
+                      <span className="skill-name">HTML/CSS</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "45%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">45%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(45)}`}>
+                      {getSkillLevel(45)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">🐍</span>
+                      <span className="skill-name">Python</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "40%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">40%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(40)}`}>
+                      {getSkillLevel(40)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">☕</span>
+                      <span className="skill-name">Java</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "35%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">35%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(35)}`}>
+                      {getSkillLevel(35)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">⚙️</span>
+                      <span className="skill-name">C/C++</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "30%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">30%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(30)}`}>
+                      {getSkillLevel(30)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">🐘</span>
+                      <span className="skill-name">PHP</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "0%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">0%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(0)}`}>
+                      {getSkillLevel(0)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* フレームワーク・ツール */}
+              <div className="skills-section">
+                <h4>フレームワーク・ツール</h4>
+                <div className="skills-grid">
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">🔥</span>
+                      <span className="skill-name">Firebase</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "50%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">50%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(50)}`}>
+                      {getSkillLevel(50)}
+                    </div>
+                  </div>
+
+                  <div className="skill-card">
+                    <div className="skill-header">
+                      <span className="skill-icon">📦</span>
+                      <span className="skill-name">Git</span>
+                    </div>
+                    <div className="skill-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: "45%" }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">45%</span>
+                    </div>
+                    <div className={`skill-level ${getSkillLevelClass(45)}`}>
+                      {getSkillLevel(45)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* その他のスキル */}
+              <div className="skills-section">
+                <h4>その他のスキル</h4>
+                <ul className="info-list">
+                  <li>来年からネットワーク業界のエンジニアとして就職予定</li>
+                  <li>現在長期インターンにてWebサイト制作を勉強中</li>
+                  <li>JavaScript, React.jsなどのフロントエンド開発</li>
+                </ul>
+              </div>
             </div>
 
-            <div className="detail-item">
+            <div className="scroll-button-container">
+              <button
+                className="scroll-button"
+                onClick={() =>
+                  document
+                    .getElementById("hobbies")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <span>↓</span>
+                <p>趣味・興味へ</p>
+              </button>
+            </div>
+
+            <div className="detail-item" id="hobbies">
               <div className="section-bar">
                 <hr />
               </div>
               <h3>趣味・興味</h3>
-              <p>写真撮影</p>
-              <p>Web開発</p>
-              <p>ネットワーク技術</p>
+              <ul className="info-list">
+                <li>ガンバ大阪サポーター</li>
+                <li>阪神ファン</li>
+                <li>お笑い（さらば青春の光, 霜降り明星, ジャルジャルなど）</li>
+                <li>温泉・サウナ</li>
+                <li>旅行</li>
+                <li>写真撮影</li>
+                <li>運動</li>
+                <li>ドライブ</li>
+                <li>👆見たら分かるように結構広く浅く多趣味な人間です！</li>
+              </ul>
             </div>
           </div>
         </div>
