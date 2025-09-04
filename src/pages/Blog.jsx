@@ -29,11 +29,14 @@ const CustomImage = ({ src, alt, title, width, height, style }) => {
   const scale = scaleInfo.scale;
 
   return (
-    <div
+    <span
       className="custom-image-container"
       style={{
         transform: scale ? `scale(${scale})` : undefined,
         transformOrigin: scale ? "center" : undefined,
+        display: "inline-block",
+        width: "100%",
+        textAlign: "center",
       }}
     >
       <img
@@ -47,8 +50,8 @@ const CustomImage = ({ src, alt, title, width, height, style }) => {
           transform: "none", // 画像自体のtransformは削除
         }}
       />
-      {title && <div className="image-caption">{title}</div>}
-    </div>
+      {title && <span className="image-caption">{title}</span>}
+    </span>
   );
 };
 
@@ -248,17 +251,14 @@ const CustomMath = ({ children, className }) => {
     const renderMath = async () => {
       try {
         setError("");
-        console.log("CustomMath rendering:", children);
 
         // KaTeXが読み込まれているかチェック
         if (typeof window.katex === "undefined") {
-          console.log("KaTeX not loaded, loading from CDN...");
           // KaTeX CDNを動的に読み込み
           const script = document.createElement("script");
           script.src =
             "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js";
           script.onload = () => {
-            console.log("KaTeX script loaded");
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.href =
@@ -267,35 +267,28 @@ const CustomMath = ({ children, className }) => {
 
             // 数式をレンダリング
             try {
-              console.log("Rendering math:", children);
               const html = window.katex.renderToString(children, {
                 throwOnError: false,
                 displayMode: className === "math-display",
               });
-              console.log("Rendered HTML:", html);
               setRendered(html);
             } catch (err) {
-              console.error("KaTeX rendering error:", err);
               setError("数式のレンダリングに失敗しました: " + err.message);
             }
           };
           script.onerror = () => {
-            console.error("Failed to load KaTeX script");
             setError("KaTeXの読み込みに失敗しました");
           };
           document.head.appendChild(script);
         } else {
-          console.log("KaTeX already loaded, rendering...");
           // KaTeXが既に読み込まれている場合
           const html = window.katex.renderToString(children, {
             throwOnError: false,
             displayMode: className === "math-display",
           });
-          console.log("Rendered HTML:", html);
           setRendered(html);
         }
       } catch (err) {
-        console.error("CustomMath error:", err);
         setError("数式のレンダリングに失敗しました: " + err.message);
       }
     };
@@ -358,31 +351,24 @@ const CustomMath = ({ children, className }) => {
 // カスタムリンクコンポーネント（目次用）
 const CustomLink = ({ href, children, ...props }) => {
   const handleClick = (e) => {
-    console.log("CustomLink clicked - href:", href);
-
     // 目次リンクの場合（#で始まる場合）
     if (href && href.startsWith("#")) {
       e.preventDefault();
 
       // URLエンコードされた文字をデコード（最初に実行）
       let targetId = decodeURIComponent(href);
-      console.log("After URL decode:", targetId);
 
       // ##で始まる場合は、##を除去してIDを生成
       if (targetId.startsWith("##")) {
         targetId = targetId.substring(2); // ##を除去
-        console.log("After removing ##:", targetId);
         // 日本語文字をIDに変換
         targetId = convertToRomanizedId(targetId);
-        console.log("Final targetId:", targetId);
       } else if (targetId.startsWith("#")) {
         // 通常の#リンクの場合
         targetId = targetId.substring(1); // #を除去
-        console.log("After removing #:", targetId);
       }
 
       const targetElement = document.getElementById(targetId);
-      console.log("Target element found:", targetElement);
 
       if (targetElement) {
         // スムーズスクロール
@@ -390,12 +376,6 @@ const CustomLink = ({ href, children, ...props }) => {
           behavior: "smooth",
           block: "start",
         });
-        console.log("Scrolling to element");
-      } else {
-        console.log(
-          "Target element not found. Available IDs:",
-          Array.from(document.querySelectorAll("[id]")).map((el) => el.id)
-        );
       }
     }
   };

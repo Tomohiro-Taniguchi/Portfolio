@@ -1248,10 +1248,9 @@ details > div {
 .custom-image-container {
   margin: 20px 0;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
 }
 
 .custom-image {
@@ -1262,6 +1261,7 @@ details > div {
 }
 
 .image-caption {
+  display: block;
   margin-top: 8px;
   font-style: italic;
   color: #666;
