@@ -208,7 +208,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 10px;
+  padding: 2px;
   box-shadow: 0 10px 20px rgba(101, 146, 198, 0.3);
   transition: all 0.3s ease;
 }
@@ -786,22 +786,22 @@
   }
 
   .circular-overlay {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     top: -5px;
-    left: -5px;
+    left: -40px;
   }
 
   .circular-overlay::after {
     bottom: -4px;
-    left: 5px;
+    left: 40px;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     border-top: 4px solid #4a90e2;
   }
 
   .circular-overlay p {
-    font-size: 0.45rem;
+    font-size: 0.6rem;
     line-height: 1.1;
   }
 

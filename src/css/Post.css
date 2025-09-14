@@ -587,6 +587,11 @@ details > div {
   line-height: 1.8;
   font-size: 1.1rem;
   color: #333;
+  overflow-x: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .markdown-preview h1 {
@@ -600,9 +605,12 @@ details > div {
   position: relative !important;
   text-align: center !important;
   display: block !important;
-  width: fit-content !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .markdown-preview h1::after {
@@ -629,7 +637,12 @@ details > div {
   text-align: left !important;
   position: relative !important;
   display: block !important;
-  width: fit-content !important;
+  width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .markdown-preview h2 {
@@ -651,6 +664,12 @@ details > div {
 .markdown-preview h3 {
   font-size: 1.5rem !important;
   padding-bottom: 12px !important;
+  width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .markdown-preview h3::after {
@@ -942,7 +961,9 @@ details > div {
   box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
   font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
     "Hiragino Mincho Pro", "Noto Serif JP", serif;
-  width: 100%;
+  min-width: 120px;
+  flex: 1;
+  max-width: 200px;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -963,6 +984,8 @@ details > div {
   display: flex;
   gap: 15px;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .cancel-button {
@@ -978,6 +1001,9 @@ details > div {
   box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
   font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
     "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  min-width: 120px;
+  flex: 1;
+  max-width: 200px;
 }
 
 .cancel-button:hover:not(:disabled) {
@@ -1325,6 +1351,27 @@ details > div {
   .markdown-preview {
     min-height: 300px;
   }
+
+  /* プレビューセクションのh2タグのレスポンシブ対応 */
+  .blog-preview-section h2 {
+    font-size: 1.5rem;
+  }
+
+  /* ボタングループのレスポンシブ対応 */
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .submit-button,
+  .cancel-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    min-width: auto;
+    max-width: none;
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1348,6 +1395,22 @@ details > div {
     flex-direction: column;
     gap: 15px;
     text-align: center;
+  }
+
+  /* プレビューセクションのh2タグのレスポンシブ対応（480px以下） */
+  .blog-preview-section h2 {
+    font-size: 1.3rem;
+  }
+
+  /* ボタングループのレスポンシブ対応（480px以下） */
+  .button-group {
+    gap: 10px;
+  }
+
+  .submit-button,
+  .cancel-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 }
 
@@ -1387,7 +1450,7 @@ details > div {
 
   .blog-form-section h2,
   .blog-preview-section h2 {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
   }
 
   .blog-form input,
@@ -1553,6 +1616,17 @@ details > div {
   .clear-button,
   .apply-button {
     padding: 8px 15px;
+    font-size: 0.8rem;
+  }
+
+  /* ボタングループのレスポンシブ対応（240px以下） */
+  .button-group {
+    gap: 8px;
+  }
+
+  .submit-button,
+  .cancel-button {
+    padding: 8px 12px;
     font-size: 0.8rem;
   }
 }

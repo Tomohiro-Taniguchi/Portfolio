@@ -1382,6 +1382,7 @@ export default function Post() {
                       value={blogPost.title}
                       onChange={handleTitleChange}
                       placeholder="記事のタイトルを入力してください"
+                      autoComplete="off"
                       required
                     />
                   </div>
@@ -1395,6 +1396,7 @@ export default function Post() {
                       value={blogPost.description}
                       onChange={handleInputChange}
                       placeholder="ブログ記事の概要文を入力してください。（ホームページに表示されます）"
+                      autoComplete="off"
                       rows="3"
                     />
                   </div>
@@ -1409,6 +1411,7 @@ export default function Post() {
                       value={blogPost.tags}
                       onChange={handleInputChange}
                       placeholder="例: 技術, React, プログラミング"
+                      autoComplete="off"
                     />
                   </div>
 
@@ -1488,6 +1491,7 @@ export default function Post() {
                       value={blogPost.content}
                       onChange={handleInputChange}
                       placeholder="Markdown記法で記事を書いてください"
+                      autoComplete="off"
                       required
                       rows="15"
                     />
@@ -1608,6 +1612,7 @@ export default function Post() {
                     onChange={handleImageUpload}
                     className="file-input"
                     id="imageUpload"
+                    name="imageUpload"
                     disabled={isUploading}
                   />
                   <label htmlFor="imageUpload" className="upload-label">
@@ -1699,6 +1704,7 @@ export default function Post() {
                     onChange={handleGalleryImageUpload}
                     className="file-input"
                     id="galleryImageUpload"
+                    name="galleryImageUpload"
                     disabled={isUploadingGallery}
                   />
                   <label htmlFor="galleryImageUpload" className="upload-label">
@@ -1812,6 +1818,9 @@ export default function Post() {
                       value={sortOrder}
                       onChange={(e) => handleSortChange(e.target.value)}
                       className="admin-sort-select"
+                      id="sortOrder"
+                      name="sortOrder"
+                      autoComplete="off"
                     >
                       <option value="newest">投稿日が新しい順</option>
                       <option value="oldest">投稿日が古い順</option>
@@ -1984,6 +1993,7 @@ export default function Post() {
                   onChange={(e) => handleFilterChange("title", e.target.value)}
                   placeholder="タイトルを入力..."
                   className="filter-input"
+                  autoComplete="off"
                 />
               </div>
 
@@ -2000,6 +2010,7 @@ export default function Post() {
                       handleFilterChange("dateFrom", e.target.value)
                     }
                     className="filter-input"
+                    autoComplete="off"
                   />
                   <span>〜</span>
                   <input
@@ -2011,6 +2022,7 @@ export default function Post() {
                       handleFilterChange("dateTo", e.target.value)
                     }
                     className="filter-input"
+                    autoComplete="off"
                   />
                 </div>
               </div>
