@@ -1,4 +1,6 @@
 import Header from "../components/header";
+import Footer from "../components/footer";
+import ScrollMenu from "../components/ScrollMenu";
 import "../css/Post.css";
 import { useEffect, useState } from "react";
 import { auth, db, storage } from "../firebase";
@@ -11,6 +13,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import {
   ref,
@@ -19,8 +22,9 @@ import {
   deleteObject,
   listAll,
   getMetadata,
+  updateMetadata,
 } from "firebase/storage";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -28,6 +32,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ImageIcon from "@mui/icons-material/Image";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 // カスタム画像コンポーネント（キャプション付き）
 const CustomImage = ({ src, alt, title, width, height, style }) => {
@@ -412,6 +417,9 @@ export default function Post() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userUrl, setUserUrl] = useState("");
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const { userId: urlUserId } = useParams();
   const [blogPost, setBlogPost] = useState({
     title: "",
     content: "",
@@ -445,6 +453,9 @@ export default function Post() {
   const [galleryImages, setGalleryImages] = useState([]);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [galleryImageVisibility, setGalleryImageVisibility] = useState({});
+  // 画像詳細モーダル用の状態変数
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -461,6 +472,23 @@ export default function Post() {
           navigate("/admin");
           return;
         }
+
+        // URLのユーザーIDとログインユーザーのIDが一致しない場合はリダイレクト
+        if (urlUserId && urlUserId !== user.uid) {
+          navigate(`/admin/${user.uid}`);
+          return;
+        }
+
+        // ユーザーIDを含むURLを生成
+        const userId = user.uid;
+        const currentPath = window.location.pathname;
+        const expectedPath = `/admin/${userId}`;
+        setUserUrl(window.location.origin + expectedPath);
+
+        // URLパスが期待されるパスと異なる場合はリダイレクト
+        if (currentPath !== expectedPath) {
+          navigate(expectedPath);
+        }
       },
       (error) => {
         // 認証エラーの処理
@@ -472,6 +500,28 @@ export default function Post() {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  // ヘッダーの表示/非表示を検知するuseEffect
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector(".navigation");
+      if (header) {
+        const headerBottom = header.offsetTop + header.offsetHeight;
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        setIsHeaderVisible(scrollTop < headerBottom);
+      }
+    };
+
+    // 初期設定
+    handleScroll();
+
+    // スクロールイベントのリスナーを追加
+    window.addEventListener("scroll", handleScroll);
+
+    // クリーンアップ
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 投稿リストを取得
   useEffect(() => {
@@ -569,6 +619,11 @@ export default function Post() {
           const url = await getDownloadURL(itemRef);
           const metadata = await getMetadata(itemRef);
 
+          // メタデータから公開設定を取得（デフォルトは公開）
+          const isPublic =
+            metadata.customMetadata?.isPublic === "true" ||
+            metadata.customMetadata?.isPublic === undefined;
+
           return {
             id: itemRef.name,
             name: itemRef.name.replace(/^\d+_/, ""), // タイムスタンププレフィックスを除去
@@ -576,7 +631,10 @@ export default function Post() {
             size: metadata.size,
             uploadedAt: new Date(metadata.timeCreated),
             path: itemRef.fullPath,
-            isPublic: true, // デフォルトは公開
+            isPublic: isPublic,
+            type: itemRef.name.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i)
+              ? "video"
+              : "image",
           };
         } catch (error) {
           console.error(
@@ -803,26 +861,55 @@ export default function Post() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // ファイルサイズチェック（5MB以下）
-      if (file.size > 5 * 1024 * 1024) {
-        setError("画像ファイルは5MB以下にしてください");
-        return;
-      }
+      processImageFile(file);
+    }
+  };
 
-      // ファイル形式チェック
-      if (!file.type.startsWith("image/")) {
-        setError("画像ファイルを選択してください");
-        return;
-      }
+  const processImageFile = (file) => {
+    // ファイルサイズチェック（5MB以下）
+    if (file.size > 5 * 1024 * 1024) {
+      setError("画像ファイルは5MB以下にしてください");
+      return;
+    }
 
-      setImageFile(file);
+    // ファイル形式チェック
+    if (!file.type.startsWith("image/")) {
+      setError("画像ファイルを選択してください");
+      return;
+    }
 
-      // プレビュー表示
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
+    setImageFile(file);
+
+    // プレビュー表示
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ドラッグ&ドロップ機能
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("drag-over");
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("drag-over");
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("drag-over");
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find((file) => file.type.startsWith("image/"));
+
+    if (imageFile) {
+      processImageFile(imageFile);
+    } else {
+      setError("画像ファイルを選択してください");
     }
   };
 
@@ -1067,13 +1154,21 @@ export default function Post() {
         const fileName = `${timestamp}_${file.name}`;
         const storageRef = ref(storage, `gallery-images/${fileName}`);
 
-        // アップロード
-        const snapshot = await uploadBytes(storageRef, file);
+        // メタデータを設定（公開設定を含む）
+        const metadata = {
+          customMetadata: {
+            isPublic: "true", // デフォルトは公開
+            uploadedBy: user?.uid || "unknown",
+          },
+        };
+
+        // アップロード（メタデータ付き）
+        const snapshot = await uploadBytes(storageRef, file, metadata);
         const downloadURL = await getDownloadURL(snapshot.ref);
 
         // 画像情報を保存
         const imageInfo = {
-          id: `${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
+          id: fileName, // ファイル名をIDとして使用
           name: file.name,
           url: downloadURL,
           size: file.size,
@@ -1082,13 +1177,6 @@ export default function Post() {
           isPublic: true, // デフォルトは公開
           type: isImage ? "image" : "video", // ファイルタイプを追加
         };
-
-        // Firestoreにも保存
-        await addDoc(collection(db, "galleryImages"), {
-          ...imageInfo,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
 
         newImages.push(imageInfo);
       } catch (error) {
@@ -1161,28 +1249,36 @@ export default function Post() {
   // ギャラリー画像の公開/非公開トグル機能
   const toggleGalleryImageVisibility = async (imageId) => {
     try {
-      // Firestoreにギャラリー画像の公開設定を保存
-      const imageRef = doc(db, "galleryImages", imageId);
       const currentImage = galleryImages.find((img) => img.id === imageId);
+      if (!currentImage) return;
 
-      if (currentImage) {
-        const newPublicStatus = !currentImage.isPublic;
-        await updateDoc(imageRef, {
-          isPublic: newPublicStatus,
-          updatedAt: serverTimestamp(),
-        });
+      const newPublicStatus = !currentImage.isPublic;
 
-        // ローカル状態を更新
-        setGalleryImages((prev) =>
-          prev.map((img) =>
-            img.id === imageId ? { ...img, isPublic: newPublicStatus } : img
-          )
-        );
+      // Firebase Storageのファイル参照を取得
+      const storageRef = ref(storage, currentImage.path);
 
-        alert(
-          newPublicStatus ? "画像を公開しました" : "画像を非公開にしました"
-        );
-      }
+      // 現在のメタデータを取得
+      const metadata = await getMetadata(storageRef);
+
+      // メタデータを更新（公開設定をカスタムメタデータとして保存）
+      const updatedMetadata = {
+        ...metadata,
+        customMetadata: {
+          ...metadata.customMetadata,
+          isPublic: newPublicStatus.toString(),
+        },
+      };
+
+      await updateMetadata(storageRef, updatedMetadata);
+
+      // ローカル状態を更新
+      setGalleryImages((prev) =>
+        prev.map((img) =>
+          img.id === imageId ? { ...img, isPublic: newPublicStatus } : img
+        )
+      );
+
+      alert(newPublicStatus ? "画像を公開しました" : "画像を非公開にしました");
     } catch (error) {
       console.error("公開設定の更新に失敗:", error);
       alert("公開設定の更新に失敗しました");
@@ -1205,6 +1301,18 @@ export default function Post() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  // 画像詳細モーダルを開く関数
+  const openImageModal = (image, type = "blog") => {
+    setSelectedImage({ ...image, type });
+    setShowImageModal(true);
+  };
+
+  // 画像詳細モーダルを閉じる関数
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    setShowImageModal(false);
   };
 
   // ログインしていない場合は適切な案内を表示
@@ -1232,7 +1340,15 @@ export default function Post() {
       <div className="post-content">
         <div className="post-heading">
           <hr />
-          <h1>Post</h1>
+          <div className="post-title-section">
+            <h1>Post</h1>
+          </div>
+          <div className="post-logout-section">
+            <button onClick={handleLogout} className="logout-button-top-right">
+              <LogoutIcon className="logout-icon" />
+              ログアウト
+            </button>
+          </div>
         </div>
         {error && (
           <div className="error-container">
@@ -1270,20 +1386,17 @@ export default function Post() {
                     />
                   </div>
 
-                  {/* 説明文 */}
+                  {/* 概要文 */}
                   <div className="form-group">
-                    <label htmlFor="description">説明文（SEO用）</label>
+                    <label htmlFor="description">ブログ概要</label>
                     <textarea
                       id="description"
                       name="description"
                       value={blogPost.description}
                       onChange={handleInputChange}
-                      placeholder="記事の概要を入力してください（検索結果に表示されます）"
+                      placeholder="ブログ記事の概要文を入力してください。（ホームページに表示されます）"
                       rows="3"
                     />
-                    <small className="form-help">
-                      検索結果やSNSシェア時に表示される説明文です。サイト内には表示されません。
-                    </small>
                   </div>
 
                   {/* タグ入力 */}
@@ -1302,15 +1415,36 @@ export default function Post() {
                   {/* トップ画像 */}
                   <div className="form-group">
                     <label htmlFor="featuredImage">トップ画像</label>
-                    <input
-                      type="file"
-                      id="featuredImage"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="file-input"
-                    />
+
+                    {/* カスタムファイル選択UI */}
+                    <div className="custom-file-input-container">
+                      <input
+                        type="file"
+                        id="featuredImage"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden-file-input"
+                      />
+                      <label
+                        htmlFor="featuredImage"
+                        className="custom-file-label"
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                      >
+                        <div className="file-input-content">
+                          <div className="file-input-text">
+                            <div className="file-input-title">画像を選択</div>
+                            <div className="file-input-subtitle">
+                              クリックしてファイルを選択するか、ここにドラッグ&ドロップ
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
                     <small className="form-help">
-                      画像ファイルを選択してください（5MB以下、JPG、PNG、GIF対応）
+                      対応形式: JPG、PNG、GIF / 最大サイズ: 5MB
                     </small>
 
                     {/* プレビュー表示 */}
@@ -1457,20 +1591,6 @@ export default function Post() {
                   </ReactMarkdown>
                 </div>
               </div>
-
-              {/* ユーザー情報 */}
-              <div className="user-info-section">
-                <h3>ログイン情報</h3>
-                <p>
-                  <strong>メールアドレス:</strong> {user?.email}
-                </p>
-                <p>
-                  <strong>ユーザーID:</strong> {user?.uid}
-                </p>
-                <button onClick={handleLogout} className="logout-button">
-                  ログアウト
-                </button>
-              </div>
             </div>
 
             {/* 画像アップロードセクション - 左右分割 */}
@@ -1513,7 +1633,11 @@ export default function Post() {
                   ) : (
                     <div className="image-list">
                       {uploadedImages.map((image) => (
-                        <div key={image.id} className="image-item">
+                        <div
+                          key={image.id}
+                          className="image-item"
+                          onClick={() => openImageModal(image, "blog")}
+                        >
                           <div className="image-preview">
                             <img src={image.url} alt={image.name} />
                           </div>
@@ -1531,7 +1655,10 @@ export default function Post() {
                               </span>
                               <div className="image-actions">
                                 <button
-                                  onClick={() => copyImageUrl(image.url)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyImageUrl(image.url);
+                                  }}
                                   className="copy-url-button"
                                   title="URLをコピー"
                                 >
@@ -1539,7 +1666,10 @@ export default function Post() {
                                   コピー
                                 </button>
                                 <button
-                                  onClick={() => deleteImage(image.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteImage(image.id);
+                                  }}
                                   className="delete-image-button"
                                   title="画像を削除"
                                 >
@@ -1594,7 +1724,11 @@ export default function Post() {
                   ) : (
                     <div className="image-list">
                       {galleryImages.map((image) => (
-                        <div key={image.id} className="image-item">
+                        <div
+                          key={image.id}
+                          className="image-item"
+                          onClick={() => openImageModal(image, "gallery")}
+                        >
                           <div className="image-preview">
                             <img src={image.url} alt={image.name} />
                           </div>
@@ -1612,7 +1746,10 @@ export default function Post() {
                               </span>
                               <div className="image-actions">
                                 <button
-                                  onClick={() => copyImageUrl(image.url)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyImageUrl(image.url);
+                                  }}
                                   className="copy-url-button"
                                   title="URLをコピー"
                                 >
@@ -1620,9 +1757,10 @@ export default function Post() {
                                   コピー
                                 </button>
                                 <button
-                                  onClick={() =>
-                                    toggleGalleryImageVisibility(image.id)
-                                  }
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleGalleryImageVisibility(image.id);
+                                  }}
                                   className={`visibility-toggle-button ${
                                     image.isPublic ? "public" : "private"
                                   }`}
@@ -1633,7 +1771,10 @@ export default function Post() {
                                   {image.isPublic ? "公開中" : "非公開"}
                                 </button>
                                 <button
-                                  onClick={() => deleteGalleryImage(image.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteGalleryImage(image.id);
+                                  }}
                                   className="delete-image-button"
                                   title="画像を削除"
                                 >
@@ -1913,6 +2054,107 @@ export default function Post() {
       >
         <span>↑</span>
       </button>
+
+      {/* Scroll Menu - ヘッダーが見えなくなった時に表示 */}
+      {!isHeaderVisible && <ScrollMenu />}
+
+      {/* 画像詳細モーダル */}
+      {showImageModal && selectedImage && (
+        <div className="image-detail-modal-overlay" onClick={closeImageModal}>
+          <div
+            className="image-detail-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="image-detail-header">
+              <h3>画像詳細</h3>
+              <button onClick={closeImageModal} className="close-button">
+                ×
+              </button>
+            </div>
+
+            <div className="image-detail-content">
+              <div className="image-detail-preview">
+                <img src={selectedImage.url} alt={selectedImage.name} />
+              </div>
+
+              <div className="image-detail-info">
+                <div className="image-detail-name">
+                  <ImageIcon className="folder-icon" />
+                  {selectedImage.name}
+                </div>
+
+                <div className="image-detail-meta">
+                  <div className="meta-item">
+                    <span className="meta-label">ファイルサイズ:</span>
+                    <span className="meta-value">
+                      {formatFileSize(selectedImage.size)}
+                    </span>
+                  </div>
+                  <div className="meta-item">
+                    <span className="meta-label">アップロード日時:</span>
+                    <span className="meta-value">
+                      {formatDate(selectedImage.uploadedAt)}
+                    </span>
+                  </div>
+                  {selectedImage.type === "gallery" && (
+                    <div className="meta-item">
+                      <span className="meta-label">公開状態:</span>
+                      <span
+                        className={`meta-value ${
+                          selectedImage.isPublic ? "public" : "private"
+                        }`}
+                      >
+                        {selectedImage.isPublic ? "公開中" : "非公開"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="image-detail-actions">
+                  <button
+                    onClick={() => copyImageUrl(selectedImage.url)}
+                    className="copy-url-button"
+                  >
+                    <FileCopyIcon className="button-icon" />
+                    URLをコピー
+                  </button>
+
+                  {selectedImage.type === "gallery" && (
+                    <button
+                      onClick={() => {
+                        toggleGalleryImageVisibility(selectedImage.id);
+                        closeImageModal();
+                      }}
+                      className={`visibility-toggle-button ${
+                        selectedImage.isPublic ? "public" : "private"
+                      }`}
+                    >
+                      {selectedImage.isPublic ? "非公開にする" : "公開する"}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      if (selectedImage.type === "gallery") {
+                        deleteGalleryImage(selectedImage.id);
+                      } else {
+                        deleteImage(selectedImage.id);
+                      }
+                      closeImageModal();
+                    }}
+                    className="delete-image-button"
+                  >
+                    <DeleteIcon className="button-icon" />
+                    削除
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   );
 }

@@ -1,0 +1,215 @@
+/* Header Component Styles */
+
+.navigation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(101, 146, 198, 0.7);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  min-height: 64px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 5px;
+  gap: 10px;
+}
+
+.logo-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.logo-text {
+  color: #473833;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  color: #473833;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #473833;
+  transform: translateY(-2px);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .navigation {
+    padding: 8px 15px;
+    flex-direction: column;
+    gap: 8px;
+    min-height: auto;
+    align-items: center;
+  }
+
+  .nav-left {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    height: 45px;
+    margin-right: 0;
+  }
+
+  .logo-text {
+    font-size: 12px;
+  }
+
+  .nav-center {
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-center::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    font-size: clamp(12px, 3vw, 16px);
+    padding: 4px 8px;
+    flex-shrink: 1;
+    white-space: nowrap;
+    min-width: 0;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navigation {
+    padding: 6px 10px;
+    flex-direction: column;
+    gap: 6px;
+    min-height: auto;
+    align-items: center;
+  }
+
+  .nav-left {
+    margin-bottom: 0;
+  }
+
+  .logo {
+    height: 35px;
+  }
+
+  .logo-text {
+    font-size: 10px;
+  }
+
+  .nav-center {
+    gap: 2px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-center::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    font-size: clamp(10px, 2.8vw, 14px);
+    padding: 3px 6px;
+    flex-shrink: 1;
+    white-space: nowrap;
+    min-width: 0;
+    text-align: center;
+  }
+}
+
+@media (max-width: 240px) {
+  .navigation {
+    padding: 4px 6px;
+    flex-direction: column;
+    gap: 4px;
+    min-height: auto;
+    align-items: center;
+  }
+
+  .nav-left {
+    margin-bottom: 0;
+  }
+
+  .logo {
+    height: 25px;
+  }
+
+  .logo-text {
+    font-size: 8px;
+  }
+
+  .nav-center {
+    gap: 1px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-center::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    font-size: clamp(9px, 2.5vw, 10px);
+    padding: 2px 4px;
+    flex-shrink: 1;
+    white-space: nowrap;
+    min-width: 0;
+    text-align: center;
+  }
+}

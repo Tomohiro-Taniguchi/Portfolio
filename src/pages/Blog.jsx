@@ -1,4 +1,6 @@
 import Header from "../components/header";
+import Footer from "../components/footer";
+import ScrollMenu from "../components/ScrollMenu";
 import "../css/Blog.css";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
@@ -6,7 +8,7 @@ import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 
 // カスタム画像コンポーネント（キャプション付き）
 const CustomImage = ({ src, alt, title, width, height, style }) => {
@@ -402,14 +404,78 @@ export default function Blog() {
   });
   const [availableTags, setAvailableTags] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(12); // 4×3のグリッド表示
+  const [postsPerPage] = useState(9); // 3×3のグリッド表示
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isPaginationTransition, setIsPaginationTransition] = useState(false);
   const { postId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // ページが読み込まれた時に上部にスクロール
     window.scrollTo(0, 0);
     fetchBlogPosts();
+  }, []);
+
+  // ブラウザのスクロール位置復元を無効化
+  useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  // ページネーション時のスクロール位置制御
+  useEffect(() => {
+    // ページネーション時のみ最下部にスクロール
+    if (isPaginationTransition) {
+      // 即座に最下部にスクロール（アニメーションなし）
+      const scrollToBottom = () => {
+        // 複数の方法で最下部を取得し、最も確実な値を選択
+        const maxHeight = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.offsetHeight,
+          document.body.clientHeight,
+          document.documentElement.clientHeight
+        );
+
+        // 即座にスクロール（アニメーションなし）
+        window.scrollTo({
+          top: maxHeight,
+          left: 0,
+          behavior: "instant",
+        });
+      };
+
+      // 複数回実行して確実にスクロール
+      scrollToBottom();
+      requestAnimationFrame(scrollToBottom);
+      setTimeout(scrollToBottom, 0);
+      setTimeout(scrollToBottom, 10);
+    }
+  }, [currentPage, isPaginationTransition]);
+
+  // ヘッダーの表示/非表示を検知するuseEffect
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector(".navigation");
+      if (header) {
+        const headerBottom = header.offsetTop + header.offsetHeight;
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        setIsHeaderVisible(scrollTop < headerBottom);
+      }
+    };
+
+    // 初期設定
+    handleScroll();
+
+    // スクロールイベントのリスナーを追加
+    window.addEventListener("scroll", handleScroll);
+
+    // クリーンアップ
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -591,18 +657,39 @@ export default function Blog() {
 
   const goToNextPage = () => {
     if (currentPage < totalPages) {
+      // ページネーション開始：transitionを無効化
+      setIsPaginationTransition(true);
       setCurrentPage(currentPage + 1);
+
+      // transitionを再有効化（useEffectでスクロール処理を行うため）
+      setTimeout(() => {
+        setIsPaginationTransition(false);
+      }, 200);
     }
   };
 
   const goToPrevPage = () => {
     if (currentPage > 1) {
+      // ページネーション開始：transitionを無効化
+      setIsPaginationTransition(true);
       setCurrentPage(currentPage - 1);
+
+      // transitionを再有効化（useEffectでスクロール処理を行うため）
+      setTimeout(() => {
+        setIsPaginationTransition(false);
+      }, 200);
     }
   };
 
   const goToPage = (pageNumber) => {
+    // ページネーション開始：transitionを無効化
+    setIsPaginationTransition(true);
     setCurrentPage(pageNumber);
+
+    // transitionを再有効化（useEffectでスクロール処理を行うため）
+    setTimeout(() => {
+      setIsPaginationTransition(false);
+    }, 200);
   };
 
   if (isLoading) {
@@ -639,7 +726,7 @@ export default function Blog() {
         <div className="blog-content">
           <div className="blog-post-detail">
             <button onClick={handleBackToList} className="back-button">
-              ← 記事一覧に戻る
+              ← 記事一覧へ
             </button>
 
             <article className="post-content">
@@ -768,11 +855,17 @@ export default function Blog() {
             <p>まだブログ記事がありません</p>
           </div>
         ) : (
-          <div className="blog-posts-grid">
+          <div
+            className={`blog-posts-grid ${
+              isPaginationTransition ? "no-transition" : ""
+            }`}
+          >
             {currentPosts.map((post) => (
               <article
                 key={post.id}
-                className="blog-post-card"
+                className={`blog-post-card ${
+                  isPaginationTransition ? "no-transition" : ""
+                }`}
                 onClick={() => handlePostClick(post)}
               >
                 {post.featuredImage && (
@@ -956,6 +1049,11 @@ export default function Blog() {
       >
         <span>↑</span>
       </button>
+
+      {/* Scroll Menu - ヘッダーが見えなくなった時に表示 */}
+      {!isHeaderVisible && <ScrollMenu />}
+
+      <Footer />
     </div>
   );
 }

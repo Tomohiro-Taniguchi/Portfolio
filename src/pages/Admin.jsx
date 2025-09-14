@@ -1,4 +1,5 @@
 import Header from "../components/header";
+import Footer from "../components/footer";
 import "../css/Admin.css";
 import { useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -10,6 +11,7 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,8 +24,16 @@ export default function Admin() {
     try {
       setIsLoading(true);
       setError("");
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/admin/:id/b203357m241731");
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      setIsLoggedIn(true);
+
+      // ログイン成功時にユーザーIDを含むURLにリダイレクト
+      navigate(`/admin/${user.uid}`);
     } catch (error) {
       setError("ログインに失敗しました");
       console.error("ログインに失敗しました", error);
@@ -31,6 +41,7 @@ export default function Admin() {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="admin-container">
       {/* 降る雪 */}
@@ -52,7 +63,10 @@ export default function Admin() {
 
       <Header />
       <div className="login-content">
-        <h1>管理者専用</h1>
+        <div className="admin-heading">
+          <hr />
+          <h1>Admin</h1>
+        </div>
         <div className="login-form">
           <form onSubmit={handleLogin}>
             {error && <p className="error-message">{error}</p>}
@@ -88,6 +102,7 @@ export default function Admin() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

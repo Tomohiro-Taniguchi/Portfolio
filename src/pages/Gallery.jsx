@@ -1,4 +1,6 @@
 import Header from "../components/header";
+import Footer from "../components/footer";
+import ScrollMenu from "../components/ScrollMenu";
 import "../css/Gallery.css";
 import { useEffect, useState } from "react";
 import { storage } from "../firebase";
@@ -9,11 +11,34 @@ export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
   useEffect(() => {
     // ページが読み込まれた時に上部にスクロール
     window.scrollTo(0, 0);
     fetchGalleryImages();
+  }, []);
+
+  // ヘッダーの表示/非表示を検知するuseEffect
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector(".navigation");
+      if (header) {
+        const headerBottom = header.offsetTop + header.offsetHeight;
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        setIsHeaderVisible(scrollTop < headerBottom);
+      }
+    };
+
+    // 初期設定
+    handleScroll();
+
+    // スクロールイベントのリスナーを追加
+    window.addEventListener("scroll", handleScroll);
+
+    // クリーンアップ
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // ギャラリー画像を取得
@@ -30,6 +55,11 @@ export default function Gallery() {
           const url = await getDownloadURL(itemRef);
           const metadata = await getMetadata(itemRef);
 
+          // メタデータから公開設定を取得（デフォルトは公開）
+          const isPublic =
+            metadata.customMetadata?.isPublic === "true" ||
+            metadata.customMetadata?.isPublic === undefined;
+
           return {
             id: itemRef.name,
             name: itemRef.name.replace(/^\d+_/, ""), // タイムスタンププレフィックスを除去
@@ -37,6 +67,7 @@ export default function Gallery() {
             size: metadata.size,
             uploadedAt: new Date(metadata.timeCreated),
             path: itemRef.fullPath,
+            isPublic: isPublic,
             type: itemRef.name.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i)
               ? "video"
               : "image", // ファイル拡張子で判定
@@ -51,7 +82,7 @@ export default function Gallery() {
       });
 
       const images = (await Promise.all(imagePromises)).filter(
-        (img) => img !== null
+        (img) => img !== null && img.isPublic // 公開されている画像のみをフィルタリング
       );
 
       // アップロード日時でソート（新しい順）
@@ -214,6 +245,11 @@ export default function Gallery() {
       >
         <span>↑</span>
       </button>
+
+      {/* Scroll Menu - ヘッダーが見えなくなった時に表示 */}
+      {!isHeaderVisible && <ScrollMenu />}
+
+      <Footer />
     </div>
   );
 }

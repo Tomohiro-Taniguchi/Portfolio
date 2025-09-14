@@ -75,68 +75,54 @@ html {
   }
 }
 
-.navigation {
+/* Logo Overlay */
+.logo-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(101, 146, 198, 0.7);
-  backdrop-filter: blur(10px);
-  z-index: 10;
+  top: 160px;
+  left: 10px;
+  z-index: 15;
 }
 
-.nav-left {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 100px;
-  width: auto;
-}
-
-.logo-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  padding: 5px;
-}
-
-.logo-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  font-size: 24px;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  margin: 0;
-}
-
-.nav-link:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  transform: translateY(-2px);
+.overlay-logo {
+  width: 480px;
+  height: auto;
+  opacity: 0.9;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* レスポンシブ対応 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .logo-overlay {
+    top: 130px;
+    left: 5px;
+  }
+
+  .overlay-logo {
+    width: 300px !important;
+  }
+}
+
+/* iPad Air専用の調整 (768px-820px) */
+@media (max-width: 820px) and (min-width: 768px) {
+  .overlay-logo {
+    width: 210px !important;
+  }
+}
+
+/* iPad Mini専用の調整 (744px) */
+@media (max-width: 744px) and (min-width: 480px) {
+  .overlay-logo {
+    width: 285px !important;
+  }
+}
+
+/* iPad Air専用の調整 (820px) */
+@media (max-width: 820px) and (min-width: 769px) {
+  .overlay-logo {
+    width: 195px !important;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-section {
     height: 100vh;
@@ -152,28 +138,13 @@ html {
     animation: fadeInFloat 3s ease-out forwards;
   }
 
-  .navigation {
-    padding: 10px;
-    flex-direction: column;
-    gap: 10px;
+  .logo-overlay {
+    top: 110px;
+    left: 5px;
   }
 
-  .nav-left {
-    margin-bottom: 5px;
-  }
-
-  .logo {
-    height: 45px;
-    margin-right: 0;
-  }
-
-  .nav-center {
-    gap: 10px;
-  }
-
-  .nav-link {
-    font-size: 16px;
-    padding: 6px 12px;
+  .overlay-logo {
+    width: 240px;
   }
 }
 
@@ -188,50 +159,40 @@ html {
     animation: fadeInFloat 3s ease-out forwards;
   }
 
-  .navigation {
-    padding: 10px;
-    gap: 10px;
+  .logo-overlay {
+    top: 90px;
+    left: 5px;
   }
 
-  .nav-left {
-    margin-bottom: 8px;
+  .overlay-logo {
+    width: 240px;
   }
+}
 
-  .logo {
-    height: 40px;
-  }
-
-  .nav-center {
-    gap: 10px;
-  }
-
-  .nav-link {
-    font-size: 14px;
-    padding: 6px 12px;
-  }
+/* Section Container - 共通スタイル */
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 40px;
 }
 
 /* About Me Section */
 .about-me-section {
-  padding: 40px 0;
   background: white;
-  min-height: 100vh;
+
   display: flex;
   align-items: center;
 }
 
 .about-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 40px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 20px;
   align-items: center;
 }
 
 .about-text {
-  padding-right: 40px;
+  padding-right: 20px;
 }
 
 .about-heading {
@@ -334,64 +295,91 @@ html {
 }
 
 .about-image {
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.about-image-container {
+  position: relative;
+  display: inline-block;
+}
+
 .about-image img {
-  width: 75%;
+  width: 100%;
   max-width: 300px;
   height: auto;
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
   transition: all 0.3s ease;
+  display: block;
 }
 
-.about-image img:hover,
-.about-image:hover img {
+.about-image-container:hover img {
   transform: scale(1.1);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
 }
 
-.about-image:hover .circular-text,
-.about-image .circular-text:hover {
-  transform: scale(1.1);
-}
-
 .circular-text {
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 200px;
-  height: 200px;
+  top: -15px;
+  right: -100px;
+  width: 180px;
+  height: 180px;
   background: rgba(101, 146, 198, 0.8);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-align: center;
-  padding: 20px;
-  line-height: 1.4;
+  padding: 15px;
+  line-height: 1.3;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
 
-/* About Me Section Responsive */
+.about-image-container:hover .circular-text {
+  transform: scale(1.05);
+}
+
+/* About Me Section Responsive - Tablet */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .circular-text {
+    width: 160px;
+    height: 160px;
+    font-size: 0.75rem;
+    top: -12px;
+    right: -60px;
+    padding: 14px;
+    line-height: 1.25;
+  }
+}
+
+/* About Me Section Responsive - Mobile */
 @media (max-width: 768px) {
+  .section-container {
+    padding: 80px 20px;
+  }
+
   .about-content {
     grid-template-columns: 1fr;
     gap: 40px;
-    padding: 0 20px;
   }
 
   .about-text {
     padding-right: 0;
     text-align: center;
+  }
+
+  .about-heading {
+    text-align: center;
+  }
+
+  .about-heading hr {
+    margin: 0 auto 20px auto;
   }
 
   .about-heading h1 {
@@ -411,29 +399,27 @@ html {
   }
 
   .circular-text {
-    width: 150px;
-    height: 150px;
-    font-size: 0.8rem;
+    width: 140px;
+    height: 140px;
+    font-size: 0.7rem;
     top: -10px;
-    right: -10px;
+    right: -30px;
+    padding: 12px;
+    line-height: 1.2;
   }
 }
 
 /* Purpose Section */
 .purpose-section {
-  padding: 40px 0;
   background: white;
-  min-height: auto;
-  display: block;
+  display: flex;
+  align-items: center;
 }
 
 .purpose-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 40px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 20px;
   align-items: center;
 }
 
@@ -455,7 +441,7 @@ html {
   max-width: 600px;
   margin: 0;
   text-align: left;
-  padding-right: 40px;
+  padding-right: 20px;
 }
 
 .purpose-heading {
@@ -492,12 +478,19 @@ html {
   .purpose-content {
     grid-template-columns: 1fr;
     gap: 40px;
-    padding: 0 20px;
   }
 
   .purpose-text {
     padding-right: 0;
     text-align: center;
+  }
+
+  .purpose-heading {
+    text-align: center;
+  }
+
+  .purpose-heading hr {
+    margin: 0 auto 20px auto;
   }
 
   .purpose-heading h1 {
@@ -549,5 +542,869 @@ html {
     width: 50px;
     height: 50px;
     font-size: 1.2rem;
+  }
+}
+
+/* Homepage Blog Section - 既存のCSSを壊さないように最後に追加 */
+.homepage-blog-section {
+  background: white;
+}
+
+.homepage-blog-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.homepage-blog-card {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.homepage-blog-card-link {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  display: block;
+}
+
+/* Homepage Blog Post Card */
+.homepage-blog-post-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(101, 146, 198, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 450px;
+  width: 100%;
+}
+
+.homepage-blog-post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-color: rgba(101, 146, 198, 0.3);
+}
+
+/* Homepage Post Image */
+.homepage-post-image {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 0;
+  background: #f8f9fa;
+  position: relative;
+}
+
+.homepage-post-thumbnail {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border-radius: 0;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #f8f9fa;
+  object-position: center;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.homepage-blog-post-card:hover .homepage-post-thumbnail {
+  transform: scale(1.05);
+}
+
+/* Homepage Post Info */
+.homepage-post-info {
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.homepage-post-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  text-align: left;
+}
+
+.homepage-post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.homepage-post-date-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.homepage-post-date {
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Homepage Tags */
+.homepage-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.homepage-tag {
+  background: #6592c6;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.homepage-tag:hover {
+  background: #5a7db3;
+  transform: translateY(-1px);
+}
+
+.homepage-tag-more {
+  background: #e9ecef;
+  color: #666;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.homepage-blog-text {
+  max-width: 600px;
+  margin: 0;
+  text-align: left;
+  padding-right: 0px;
+}
+
+.homepage-blog-heading {
+  margin-bottom: 40px;
+}
+
+.homepage-blog-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin: 0 0 20px 0;
+}
+
+.homepage-blog-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.homepage-blog-text h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.homepage-blog-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+.homepage-blog-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  margin: 0 0 40px 0;
+  text-align: justify;
+}
+
+.homepage-blog-cta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.homepage-blog-cta:hover {
+  transform: scale(1.05);
+}
+
+.homepage-blog-cta:hover .cta-button {
+  background: #6592c6;
+  color: white;
+  transform: scale(1.2);
+}
+
+.homepage-blog-cta:hover .cta-text {
+  color: #666;
+}
+
+/* Link内の要素のスタイル調整 */
+.homepage-blog-cta .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Homepage Blog Section Responsive */
+@media (max-width: 768px) {
+  .homepage-blog-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .homepage-blog-text {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .homepage-blog-heading {
+    text-align: center;
+  }
+
+  .homepage-blog-heading hr {
+    margin: 0 auto 20px auto;
+  }
+
+  .homepage-blog-heading h1 {
+    font-size: 2rem;
+  }
+
+  .homepage-blog-text h2 {
+    font-size: 1.5rem;
+  }
+
+  .homepage-blog-description {
+    text-align: center;
+  }
+
+  .homepage-blog-cta {
+    justify-content: center;
+  }
+
+  .homepage-blog-post-card {
+    max-width: 100%;
+  }
+
+  .homepage-post-title {
+    font-size: 1.1rem;
+  }
+
+  .homepage-post-info {
+    padding: 12px 15px;
+  }
+}
+
+/* Homepage Gallery Section - 既存のCSSを壊さないように最後に追加 */
+.homepage-gallery-section {
+  background: white;
+  padding: 0;
+}
+
+.homepage-gallery-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.homepage-gallery-heading {
+  text-align: left;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.homepage-gallery-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin: 0 0 15px 0;
+}
+
+.homepage-gallery-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* Gallery Flow Animation - Full Width */
+.homepage-gallery-flow {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 5px;
+  mask: linear-gradient(90deg, transparent, black 20%, black 80%, transparent);
+  -webkit-mask: linear-gradient(
+    90deg,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+}
+
+.homepage-gallery-flow-inner {
+  display: flex;
+  animation: flow 45s linear infinite;
+  width: calc(100% * 3);
+  gap: 20px;
+  height: 100%;
+}
+
+.homepage-gallery-item {
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+}
+
+.homepage-gallery-image-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.homepage-gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.homepage-gallery-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.homepage-gallery-cta:hover {
+  transform: scale(1.05);
+}
+
+.homepage-gallery-cta:hover .cta-button {
+  background: #6592c6;
+  color: white;
+  transform: scale(1.2);
+}
+
+.homepage-gallery-cta:hover .cta-text {
+  color: #666;
+}
+
+/* Link内の要素のスタイル調整 */
+.homepage-gallery-cta .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Flow Animation Keyframes */
+@keyframes flow {
+  0% {
+    transform: translateX(0);
+  }
+  99.999% {
+    transform: translateX(-95.333%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Homepage Gallery Section Responsive */
+@media (max-width: 768px) {
+  .homepage-gallery-heading {
+    text-align: center;
+  }
+
+  .homepage-gallery-heading hr {
+    margin: 0 auto 15px auto;
+  }
+
+  .homepage-gallery-heading h1 {
+    font-size: 2rem;
+  }
+
+  .homepage-gallery-flow {
+    height: 200px;
+  }
+
+  .homepage-gallery-item {
+    width: 180px;
+    height: 180px;
+  }
+
+  .homepage-gallery-flow-inner {
+    gap: 15px;
+  }
+
+  .homepage-gallery-loading {
+    height: 225px;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-gallery-flow {
+    height: 170px;
+  }
+
+  .homepage-gallery-item {
+    width: 150px;
+    height: 150px;
+  }
+
+  .homepage-gallery-loading {
+    height: 170px;
+  }
+}
+
+/* Homepage My Dog Section - 既存のCSSを壊さないように最後に追加 */
+.homepage-mydog-section {
+  background: white;
+  padding: 0;
+}
+
+.homepage-mydog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.homepage-mydog-heading {
+  text-align: left;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.homepage-mydog-heading hr {
+  width: 200px;
+  height: 3px;
+  background: #333;
+  border: none;
+  margin: 0 0 15px 0;
+}
+
+.homepage-mydog-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* My Dog Flow Animation - Full Width */
+.homepage-mydog-flow {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  mask: linear-gradient(90deg, transparent, black 20%, black 80%, transparent);
+  -webkit-mask: linear-gradient(
+    90deg,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+}
+
+.homepage-mydog-flow-inner {
+  display: flex;
+  animation: mydogFlow 90s linear infinite;
+  width: calc(100% * 3);
+  gap: 20px;
+  height: 100%;
+}
+
+.homepage-mydog-item {
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+}
+
+.homepage-mydog-image-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.homepage-mydog-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* My Dog Info */
+.homepage-mydog-info {
+  text-align: center;
+  padding: 5px 0 50px 0;
+}
+
+/* My Dog Card */
+.mydog-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(101, 146, 198, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.mydog-card-header {
+  background: white;
+  color: #333;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mydog-card-header h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.mydog-card-content {
+  padding: 25px;
+}
+
+.mydog-info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mydog-info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.mydog-info-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+  min-width: 80px;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.mydog-info-value {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+  flex: 1;
+  text-align: left;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+.mydog-info-value.female {
+  color: #dc3545;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* My Dog Flow Animation Keyframes */
+@keyframes mydogFlow {
+  0% {
+    transform: translateX(0);
+  }
+  99.999% {
+    transform: translateX(-190.333%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Homepage My Dog Section Responsive */
+@media (max-width: 768px) {
+  .homepage-mydog-heading {
+    text-align: center;
+  }
+
+  .homepage-mydog-heading hr {
+    margin: 0 auto 15px auto;
+  }
+
+  .homepage-mydog-heading h1 {
+    font-size: 2rem;
+  }
+
+  .homepage-mydog-flow {
+    height: 200px;
+  }
+
+  .homepage-mydog-item {
+    width: 180px;
+    height: 180px;
+  }
+
+  .homepage-mydog-flow-inner {
+    gap: 15px;
+  }
+
+  .homepage-mydog-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .mydog-card {
+    margin: 0 20px;
+  }
+
+  .mydog-card-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .mydog-card-content {
+    padding: 20px;
+  }
+
+  .mydog-info-label {
+    min-width: 70px;
+    font-size: 0.9rem;
+  }
+
+  .mydog-info-value {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-mydog-flow {
+    height: 170px;
+  }
+
+  .homepage-mydog-item {
+    width: 150px;
+    height: 150px;
+  }
+
+  .mydog-card {
+    margin: 0 15px;
+  }
+
+  .mydog-card-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .mydog-card-content {
+    padding: 15px;
+  }
+
+  .mydog-info-item {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .mydog-info-label {
+    min-width: 60px;
+    font-size: 0.8rem;
+  }
+
+  .mydog-info-value {
+    font-size: 0.8rem;
+  }
+
+  .mydog-info-value.female {
+    font-size: 1rem;
+  }
+}
+
+/* 小さいスマートフォン（240px以下）での調整 */
+@media (max-width: 240px) {
+  .section-container {
+    padding: 80px 5px;
+  }
+
+  .about-content {
+    gap: 20px;
+  }
+
+  .about-heading h1 {
+    font-size: 1.6rem;
+  }
+
+  .about-text h2 {
+    font-size: 1.4rem;
+  }
+
+  .about-description {
+    font-size: 0.9rem;
+  }
+
+  .circular-text {
+    width: 100px;
+    height: 100px;
+    font-size: 0.6rem;
+    top: -8px;
+    right: -15px;
+    padding: 8px;
+    line-height: 1.1;
+  }
+
+  .purpose-heading h1 {
+    font-size: 1.6rem;
+  }
+
+  .purpose-text .about-description {
+    font-size: 0.9rem;
+  }
+
+  /* Blog Section - 240px以下 */
+  .homepage-blog-content {
+    padding: 0 5px;
+    gap: 20px;
+  }
+
+  .homepage-blog-heading h1 {
+    font-size: 1.6rem;
+  }
+
+  .homepage-blog-text h2 {
+    font-size: 1.4rem;
+  }
+
+  .homepage-blog-description {
+    font-size: 0.9rem;
+  }
+
+  .homepage-blog-post-card {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .homepage-post-title {
+    font-size: 1rem;
+  }
+
+  .homepage-post-info {
+    padding: 10px 12px;
+  }
+
+  /* Gallery Section - 240px以下 */
+  .homepage-gallery-heading h1 {
+    font-size: 1.6rem;
+  }
+
+  .homepage-gallery-flow {
+    height: 140px;
+  }
+
+  .homepage-gallery-item {
+    width: 120px;
+    height: 120px;
+  }
+
+  .homepage-gallery-flow-inner {
+    gap: 10px;
+  }
+
+  /* My Dog Section - 240px以下 */
+  .homepage-mydog-heading h1 {
+    font-size: 1.6rem;
+  }
+
+  .homepage-mydog-flow {
+    height: 140px;
+  }
+
+  .homepage-mydog-item {
+    width: 120px;
+    height: 120px;
+  }
+
+  .homepage-mydog-flow-inner {
+    gap: 10px;
+  }
+
+  .mydog-card {
+    margin: 0 5px;
+  }
+
+  .mydog-card-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .mydog-card-content {
+    padding: 12px;
+  }
+
+  .mydog-info-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .mydog-info-label {
+    min-width: 50px;
+    font-size: 0.75rem;
+  }
+
+  .mydog-info-value {
+    font-size: 0.75rem;
+  }
+
+  .mydog-info-value.female {
+    font-size: 0.9rem;
   }
 }

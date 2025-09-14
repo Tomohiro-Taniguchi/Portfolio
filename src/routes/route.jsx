@@ -15,7 +15,7 @@ export default function Router() {
       <Route path="/blog/:postId" element={<Blog />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/admin" element={<Admin />} />
-      <Route path="/admin/:id/b203357m241731" element={<Post />} />
+      <Route path="/admin/:userId" element={<Post />} />
     </Routes>
   );
 }

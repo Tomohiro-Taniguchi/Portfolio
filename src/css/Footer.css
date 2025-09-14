@@ -1,0 +1,186 @@
+/* Footer Component Styles */
+
+.footer {
+  background: rgba(101, 146, 198, 0.7);
+  backdrop-filter: blur(10px);
+  color: #473833;
+  padding: 40px 0 20px 0;
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.footer-brand h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  color: #473833;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+  position: relative;
+}
+
+.footer-social {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  color: #473833;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+}
+
+.social-link:hover {
+  background: #6592c6;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(101, 146, 198, 0.3);
+}
+
+.social-link:active {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.social-link svg {
+  font-size: 1.3rem;
+}
+
+.footer-copyright {
+  text-align: center;
+}
+
+.footer-copyright p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #473833;
+  font-weight: 400;
+  font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN",
+    "Hiragino Mincho Pro", "Noto Serif JP", serif;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .footer {
+    padding: 30px 0 15px 0;
+  }
+
+  .footer-content {
+    padding: 0 20px;
+    gap: 20px;
+  }
+
+  .footer-brand h3 {
+    font-size: 1.3rem;
+  }
+
+  .footer-social {
+    gap: 15px;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+  }
+
+  .social-link svg {
+    font-size: 1.1rem;
+  }
+
+  .footer-copyright p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 25px 0 15px 0;
+  }
+
+  .footer-content {
+    padding: 0 15px;
+    gap: 18px;
+  }
+
+  .footer-brand h3 {
+    font-size: 1.1rem;
+  }
+
+  .footer-social {
+    gap: 12px;
+  }
+
+  .social-link {
+    width: 35px;
+    height: 35px;
+  }
+
+  .social-link svg {
+    font-size: 1rem;
+  }
+
+  .footer-copyright p {
+    font-size: 0.8rem;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .footer {
+    background: rgba(101, 146, 198, 0.7);
+  }
+
+  .footer-brand h3 {
+    color: #473833;
+  }
+
+  .social-link {
+    color: #473833;
+  }
+
+  .social-link:hover {
+    color: white;
+  }
+
+  .footer-copyright p {
+    color: #473833;
+  }
+}

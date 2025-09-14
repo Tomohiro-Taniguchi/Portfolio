@@ -1,35 +1,43 @@
+import React from "react";
 import Header from "../components/header";
+import Footer from "../components/footer";
+import ScrollMenu from "../components/ScrollMenu";
 import "../css/Profile.css";
 import { useEffect, useState } from "react";
+import XIcon from "@mui/icons-material/X";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import MailIcon from "@mui/icons-material/Mail";
 
 export default function Profile() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
   const profileImages = [
     {
       src: "/img/JPHacks.jpg",
       alt: "ハッカソン",
-      text: "ハッカソンに出場した時の写真です!",
+      text: "ハッカソンに\n出場した時の\n写真です!",
     },
     {
       src: "/img/choko.jpg",
       alt: "チョコ",
-      text: "愛犬のトイプードル、名前はチョコ!",
+      text: "愛犬の\nトイプードル\n名前は\nチョコ!",
     },
     {
       src: "/img/sanrio.jpg",
       alt: "プライベート写真",
-      text: "人生初のサンリオピューロランド!",
+      text: "人生初の\nサンリオ\nピューロ\nランド!",
     },
     {
       src: "/img/gamba.jpg",
       alt: "ガンバ大阪",
-      text: "ガンバ大阪サポです!",
+      text: "ガンバ大阪\nのサポーター\nです!",
     },
     {
       src: "/img/taniguchi.jpg",
       alt: "谷口 友浩",
-      text: "実家の前で撮らされた写真です!",
+      text: "実家の前で\n撮らされた\n写真です!",
     },
   ];
 
@@ -46,6 +54,57 @@ export default function Profile() {
   useEffect(() => {
     // ページが読み込まれた時に上部にスクロール
     window.scrollTo(0, 0);
+
+    // スクロールアニメーション用のIntersection Observer
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate-in");
+        }
+      });
+    }, observerOptions);
+
+    // アニメーション対象の要素を監視
+    const animatedElements = document.querySelectorAll(
+      ".detail-item, .profile-text"
+    );
+    animatedElements.forEach((el) => {
+      observer.observe(el);
+    });
+
+    // クリーンアップ
+    return () => {
+      animatedElements.forEach((el) => {
+        observer.unobserve(el);
+      });
+    };
+  }, []);
+
+  // ヘッダーの表示/非表示を検知するuseEffect
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector(".navigation");
+      if (header) {
+        const headerBottom = header.offsetTop + header.offsetHeight;
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        setIsHeaderVisible(scrollTop < headerBottom);
+      }
+    };
+
+    // 初期設定
+    handleScroll();
+
+    // スクロールイベントのリスナーを追加
+    window.addEventListener("scroll", handleScroll);
+
+    // クリーンアップ
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // スキルレベルを判定する関数
@@ -84,6 +143,38 @@ export default function Profile() {
                 <br />
                 <h2>谷口 友浩</h2>
                 <p className="name-subtitle">~Tomohiro Taniguchi~</p>
+                <div className="sns-icons">
+                  <a
+                    href="https://x.com/tguchi_tech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sns-link"
+                  >
+                    <XIcon className="sns-icon" />
+                  </a>
+                  <a
+                    href="https://github.com/Tomohiro-Taniguchi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sns-link"
+                  >
+                    <GitHubIcon className="sns-icon" />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/t.guchi1202"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sns-link"
+                  >
+                    <InstagramIcon className="sns-icon" />
+                  </a>
+                  <a
+                    href="mailto:ttaniguchi.131202@gmail.com"
+                    className="sns-link"
+                  >
+                    <MailIcon className="sns-icon" />
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -101,7 +192,19 @@ export default function Profile() {
                   alt={profileImages[currentImageIndex].alt}
                 />
                 <div className="circular-overlay">
-                  <p>{profileImages[currentImageIndex].text}</p>
+                  <p>
+                    {profileImages[currentImageIndex].text
+                      .split("\n")
+                      .map((line, index) => (
+                        <React.Fragment key={index}>
+                          {line}
+                          {index <
+                            profileImages[currentImageIndex].text.split("\n")
+                              .length -
+                              1 && <br />}
+                        </React.Fragment>
+                      ))}
+                  </p>
                 </div>
               </div>
 
@@ -188,84 +291,120 @@ export default function Profile() {
               <h3>経歴</h3>
               <div className="timeline-container">
                 <div className="timeline">
-                  <div className="timeline-item">
-                    <div className="timeline-dot"></div>
-                    <div className="timeline-content">
-                      <h4>箕面市立西小学校</h4>
-                      <p className="timeline-date">2008年4月 ~ 2014年3月</p>
-                    </div>
-                  </div>
-
-                  <div className="timeline-item">
-                    <div className="timeline-dot"></div>
-                    <div className="timeline-content">
-                      <h4>箕面市立第一中学校</h4>
-                      <p className="timeline-date">2014年4月 ~ 2017年3月</p>
-                    </div>
-                  </div>
-
-                  <div className="timeline-item">
-                    <div className="timeline-dot"></div>
-                    <div className="timeline-content">
-                      <div className="school-with-logo">
-                        <h4>大阪府立池田高等学校 普通科</h4>
-                        <img
-                          src="/img/Ikeda.gif"
-                          alt="池田高校校章"
-                          className="inline-logo"
-                        />
+                  <div className="school">
+                    <div className="timeline-item">
+                      <div className="timeline-dot"></div>
+                      <div className="timeline-content">
+                        <div className="school-with-logo">
+                          <h4>箕面市立西小学校</h4>
+                          <img
+                            src="/img/nishisyo.png"
+                            alt="箕面市立西小学校校章"
+                            className="inline-logo"
+                          />
+                        </div>
+                        <p className="timeline-date">2008年4月 ~ 2014年3月</p>
                       </div>
-                      <p className="timeline-date">2017年4月 ~ 2020年3月</p>
                     </div>
                   </div>
 
-                  <div className="timeline-item">
-                    <div className="timeline-dot"></div>
-                    <div className="timeline-content">
-                      <div className="school-with-logo">
-                        <h4>広島大学 情報科学部 情報科学科</h4>
-                        <img
-                          src="/img/HiroshimaUniv.jpg"
-                          alt="広島大学学章"
-                          className="inline-logo"
-                        />
+                  <div className="school">
+                    <div className="timeline-item">
+                      <div className="timeline-dot"></div>
+                      <div className="timeline-content">
+                        <div className="school-with-logo">
+                          <h4>箕面市立第一中学校</h4>
+                          <img
+                            src="/img/1chu.png"
+                            alt="箕面市立第一中学校校章"
+                            className="inline-logo"
+                          />
+                        </div>
+                        <p className="timeline-date">2014年4月 ~ 2017年3月</p>
                       </div>
-                      <p className="timeline-date">2020年4月 ~ 2024年3月</p>
-                      <p className="timeline-detail">
-                        インフォマティクスコース
-                      </p>
-                      <p className="timeline-detail">情報セキュリティ研究室</p>
-                      <p className="timeline-detail">
-                        研究概要：
-                        ローカル5G通信における電波伝搬特性/伝送性能の測定と可視化
-                      </p>
                     </div>
                   </div>
 
-                  <div className="timeline-item">
-                    <div className="timeline-dot"></div>
-                    <div className="timeline-content">
-                      <div className="school-with-logo">
-                        <h4>
-                          広島大学大学院 先進理工系科学研究科 先進理工系科学専攻
-                        </h4>
-                        <img
-                          src="/img/HiroshimaUniv.jpg"
-                          alt="広島大学学章"
-                          className="inline-logo"
-                        />
+                  <div className="school">
+                    <div className="timeline-item">
+                      <div className="timeline-dot"></div>
+                      <div className="timeline-content">
+                        <div className="school-with-logo">
+                          <h4>大阪府立池田高等学校 普通科</h4>
+                          <img
+                            src="/img/Ikeda.gif"
+                            alt="池田高校校章"
+                            className="inline-logo"
+                          />
+                        </div>
+                        <p className="timeline-date">2017年4月 ~ 2020年3月</p>
                       </div>
-                      <p className="timeline-date">
-                        2024年4月 ~ 2026年3月修了予定
-                      </p>
-                      <p className="timeline-detail">
-                        情報科学プログラム 博士課程前期
-                      </p>
-                      <p className="timeline-detail">情報セキュリティ研究室</p>
-                      <p className="timeline-detail">
-                        研究概要：
-                        広島大学ローカル5G通信におけるデジタルツインネットワークの構築と評価
-                      </p>
+                    </div>
+                  </div>
+
+                  <div className="school">
+                    <div className="timeline-item">
+                      <div className="timeline-dot"></div>
+                      <div className="timeline-content">
+                        <div className="school-with-logo">
+                          <h4>広島大学 情報科学部 情報科学科</h4>
+                          <img
+                            src="/img/HiroshimaUniv.jpg"
+                            alt="広島大学学章"
+                            className="inline-logo"
+                          />
+                        </div>
+                        <p className="timeline-date">2020年4月 ~ 2024年3月</p>
+                        <p className="timeline-detail">
+                          インフォマティクスコース
+                        </p>
+                        <p className="timeline-detail">
+                          情報セキュリティ研究室
+                        </p>
+                        <p className="timeline-detail">
+                          研究概要：
+                          ローカル5G通信における電波伝搬特性/伝送性能の測定と可視化
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="school">
+                    <div className="timeline-item">
+                      <div className="timeline-dot"></div>
+                      <div className="timeline-content">
+                        <div className="school-with-logo">
+                          <h4>
+                            広島大学大学院 先進理工系科学研究科
+                            先進理工系科学専攻
+                          </h4>
+                          <div className="dual-logos">
+                            <img
+                              src="/img/HiroshimaUniv.jpg"
+                              alt="広島大学学章"
+                              className="inline-logo"
+                            />
+                            <img
+                              src="/img/advance-tech.jpg"
+                              alt="先進理工系科学研究科"
+                              className="inline-logo"
+                            />
+                          </div>
+                        </div>
+                        <p className="timeline-date">
+                          2024年4月 ~ 2026年3月修了予定
+                        </p>
+                        <p className="timeline-detail">
+                          情報科学プログラム 博士課程前期
+                        </p>
+                        <p className="timeline-detail">
+                          情報セキュリティ研究室
+                        </p>
+                        <p className="timeline-detail">
+                          研究概要：
+                          広島大学ローカル5G通信環境のデジタルツイン構築と評価
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1096,6 +1235,11 @@ export default function Profile() {
       >
         <span>↑</span>
       </button>
+
+      {/* Scroll Menu - ヘッダーが見えなくなった時に表示 */}
+      {!isHeaderVisible && <ScrollMenu />}
+
+      <Footer />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import "../css/Header.css";
 
 export default function Header() {
   return (
@@ -6,6 +7,7 @@ export default function Header() {
       <div className="nav-left">
         <Link to="/" className="logo-link">
           <img src="/img/TT.png" alt="Logo" className="logo" />
+          <span className="logo-text">TT's Lab & Hub ~Portfolio~</span>
         </Link>
       </div>
       <div className="nav-center">
