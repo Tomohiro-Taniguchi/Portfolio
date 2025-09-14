@@ -463,8 +463,8 @@ export default function Profile() {
                     <div className="timeline-content">
                       <div className="school-with-logo">
                         <h4>
-                          GeekSalon 東京拠点
-                          WebExpertコースメンター（長期インターン）
+                          GeekSalon 東京拠点 WebExpertコース
+                          メンター（長期インターン）
                         </h4>
                       </div>
                       <p className="timeline-detail">
