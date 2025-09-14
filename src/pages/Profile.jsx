@@ -58,7 +58,7 @@ export default function Profile() {
     // スクロールアニメーション用のIntersection Observer
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px",
+      rootMargin: "0px 0px -100px 0px",
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -71,7 +71,7 @@ export default function Profile() {
 
     // アニメーション対象の要素を監視
     const animatedElements = document.querySelectorAll(
-      ".detail-item, .profile-text"
+      ".detail-item, .profile-text, .skill-card, .skills-section, .timeline-container, .timeline-item"
     );
     animatedElements.forEach((el) => {
       observer.observe(el);
