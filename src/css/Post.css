@@ -2147,9 +2147,11 @@ hr {
   padding: 0;
   width: 90%;
   max-width: 500px;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .filter-modal-header {
@@ -2192,6 +2194,8 @@ hr {
 
 .filter-modal-content {
   padding: 25px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .filter-section {
@@ -2302,6 +2306,116 @@ hr {
 
 .apply-button:hover {
   background: #5a7db3;
+}
+
+/* 絞り込みモーダル - スマホ対応 */
+@media (max-width: 768px) {
+  .filter-modal {
+    width: 95%;
+    max-width: none;
+    max-height: 95vh;
+    margin: 10px;
+  }
+
+  .filter-modal-header {
+    padding: 15px 20px;
+  }
+
+  .filter-modal-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .filter-modal-content {
+    padding: 20px;
+  }
+
+  .filter-section {
+    margin-bottom: 20px;
+  }
+
+  .filter-section label {
+    font-size: 0.9rem;
+  }
+
+  .filter-input {
+    padding: 12px 15px;
+    font-size: 1rem;
+  }
+
+  .date-range {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .date-range span {
+    text-align: center;
+  }
+
+  .tag-selection {
+    gap: 6px;
+  }
+
+  .tag-button {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .filter-modal-footer {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 20px;
+  }
+
+  .clear-button,
+  .apply-button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-modal {
+    width: 98%;
+    margin: 5px;
+    max-height: 98vh;
+  }
+
+  .filter-modal-header {
+    padding: 12px 15px;
+  }
+
+  .filter-modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .filter-modal-content {
+    padding: 15px;
+  }
+
+  .filter-section label {
+    font-size: 0.85rem;
+  }
+
+  .filter-input {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .tag-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .filter-modal-footer {
+    padding: 12px 15px;
+  }
+
+  .clear-button,
+  .apply-button {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
 }
 
 /* 画像アップロードセクション - 左右分割レイアウト */

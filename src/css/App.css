@@ -315,9 +315,12 @@ html {
   display: block;
 }
 
-.about-image-container:hover img {
-  transform: scale(1.1);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+/* デスクトップのみホバー効果を適用 */
+@media (hover: hover) and (pointer: fine) {
+  .about-image-container:hover img {
+    transform: scale(1.1);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  }
 }
 
 .circular-text {
@@ -341,8 +344,11 @@ html {
   transition: all 0.3s ease;
 }
 
-.about-image-container:hover .circular-text {
-  transform: scale(1.05);
+/* デスクトップのみホバー効果を適用 */
+@media (hover: hover) and (pointer: fine) {
+  .about-image-container:hover .circular-text {
+    transform: scale(1.05);
+  }
 }
 
 /* About Me Section Responsive - Tablet */
