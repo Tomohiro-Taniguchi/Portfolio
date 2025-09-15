@@ -559,10 +559,9 @@ html {
 .homepage-blog-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 80px;
   align-items: start;
 }
 
@@ -570,6 +569,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  width: 100%;
 }
 
 .homepage-blog-card-link {
@@ -577,6 +577,7 @@ html {
   color: inherit;
   width: 100%;
   display: block;
+  margin: 0 auto;
 }
 
 /* Homepage Blog Post Card */
@@ -590,7 +591,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 450px;
+  max-width: 550px;
   width: 100%;
 }
 
