@@ -276,7 +276,7 @@ function App() {
               <p className="about-description">
                 2001年12月2日生まれ。
                 <br />
-                大阪府箕面市出身。広島県東広島市在住。
+                大阪府箕面市出身×広島県東広島市在住
                 <br />
                 大学では情報科学を専攻しており、特に研究ではネットワーク＆情報セキュリティ分野を学んでいます。
                 <br />
@@ -293,7 +293,7 @@ function App() {
             </div>
             <div className="about-image">
               <div className="about-image-container">
-                <img src="/img/pic-t-2026.jpg" alt="谷口 友浩" />
+                <img src="/img/class_reunion_tt.JPG" alt="谷口 友浩" />
                 <div className="circular-text">
                   WELCOME <br /> TO MY <br /> PORTFOLIO !
                 </div>

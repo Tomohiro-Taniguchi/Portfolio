@@ -167,6 +167,20 @@ html {
   .overlay-logo {
     width: 240px;
   }
+
+  .about-image img {
+    max-width: 220px;
+  }
+
+  .circular-text {
+    width: 100px;
+    height: 100px;
+    font-size: 0.55rem;
+    top: -7px;
+    right: -20px;
+    padding: 8px;
+    line-height: 1.1;
+  }
 }
 
 /* Section Container - 共通スタイル */
@@ -236,6 +250,7 @@ html {
   color: #555;
   margin: 0 0 40px 0;
   text-align: justify;
+  padding: 0 20px;
 }
 
 .about-cta {
@@ -377,7 +392,7 @@ html {
 
   .about-text {
     padding-right: 0;
-    text-align: center;
+    text-align: left !important;
   }
 
   .about-heading {
@@ -397,21 +412,25 @@ html {
   }
 
   .about-description {
-    text-align: center;
+    text-align: left !important;
   }
 
   .about-cta {
     justify-content: center;
   }
 
+  .about-image img {
+    max-width: 250px;
+  }
+
   .circular-text {
-    width: 140px;
-    height: 140px;
-    font-size: 0.7rem;
-    top: -10px;
-    right: -30px;
-    padding: 12px;
-    line-height: 1.2;
+    width: 120px;
+    height: 120px;
+    font-size: 0.6rem;
+    top: -8px;
+    right: -25px;
+    padding: 10px;
+    line-height: 1.15;
   }
 }
 
@@ -476,7 +495,7 @@ html {
   line-height: 1.8;
   color: #555;
   margin: 0 0 40px 0;
-  text-align: justify;
+  text-align: left;
 }
 
 /* Purpose Section Responsive */
@@ -488,7 +507,7 @@ html {
 
   .purpose-text {
     padding-right: 0;
-    text-align: center;
+    text-align: left;
   }
 
   .purpose-heading {
@@ -504,7 +523,7 @@ html {
   }
 
   .purpose-text .about-description {
-    text-align: center;
+    text-align: left;
   }
 }
 
@@ -801,7 +820,7 @@ html {
 
   .homepage-blog-text {
     padding-right: 0;
-    text-align: center;
+    text-align: left;
   }
 
   .homepage-blog-heading {
@@ -821,7 +840,7 @@ html {
   }
 
   .homepage-blog-description {
-    text-align: center;
+    text-align: left;
   }
 
   .homepage-blog-cta {
@@ -960,7 +979,7 @@ html {
     transform: translateX(0);
   }
   99.999% {
-    transform: translateX(-95.333%);
+    transform: translateX(-120%);
   }
   100% {
     transform: translateX(0);
@@ -992,6 +1011,8 @@ html {
 
   .homepage-gallery-flow-inner {
     gap: 15px;
+    animation: flow 45s linear infinite;
+    width: calc(100% * 3);
   }
 
   .homepage-gallery-loading {
@@ -1007,6 +1028,12 @@ html {
   .homepage-gallery-item {
     width: 150px;
     height: 150px;
+  }
+
+  .homepage-gallery-flow-inner {
+    gap: 15px;
+    animation: flow 45s linear infinite;
+    width: calc(100% * 3);
   }
 
   .homepage-gallery-loading {
@@ -1177,7 +1204,7 @@ html {
     transform: translateX(0);
   }
   99.999% {
-    transform: translateX(-190.333%);
+    transform: translateX(-280%);
   }
   100% {
     transform: translateX(0);
@@ -1288,6 +1315,10 @@ html {
     gap: 20px;
   }
 
+  .about-text {
+    text-align: left !important;
+  }
+
   .about-heading h1 {
     font-size: 1.6rem;
   }
@@ -1298,16 +1329,21 @@ html {
 
   .about-description {
     font-size: 0.9rem;
+    text-align: left !important;
+  }
+
+  .about-image img {
+    max-width: 180px;
   }
 
   .circular-text {
-    width: 100px;
-    height: 100px;
-    font-size: 0.6rem;
-    top: -8px;
-    right: -15px;
-    padding: 8px;
-    line-height: 1.1;
+    width: 80px;
+    height: 80px;
+    font-size: 0.5rem;
+    top: -6px;
+    right: -12px;
+    padding: 6px;
+    line-height: 1.05;
   }
 
   .purpose-heading h1 {
@@ -1324,6 +1360,10 @@ html {
     gap: 20px;
   }
 
+  .homepage-blog-text {
+    text-align: left;
+  }
+
   .homepage-blog-heading h1 {
     font-size: 1.6rem;
   }
@@ -1334,6 +1374,7 @@ html {
 
   .homepage-blog-description {
     font-size: 0.9rem;
+    text-align: left;
   }
 
   .homepage-blog-post-card {
@@ -1365,6 +1406,8 @@ html {
 
   .homepage-gallery-flow-inner {
     gap: 10px;
+    animation: flow 45s linear infinite;
+    width: calc(100% * 3);
   }
 
   /* My Dog Section - 240px以下 */
