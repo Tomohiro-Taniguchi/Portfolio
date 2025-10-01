@@ -73,6 +73,11 @@
   transform: translateY(-2px);
 }
 
+.nav-link.active {
+  background: rgba(101, 146, 198, 0.5);
+  color: #473833;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .navigation {

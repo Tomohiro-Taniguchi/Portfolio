@@ -293,7 +293,7 @@ function App() {
             </div>
             <div className="about-image">
               <div className="about-image-container">
-                <img src="/img/class_reunion_tt.JPG" alt="谷口 友浩" />
+                <img src="/img/class_reunion_tt.jpg" alt="谷口 友浩" />
                 <div className="circular-text">
                   WELCOME <br /> TO MY <br /> PORTFOLIO !
                 </div>
